@@ -1,7 +1,7 @@
 'use client'
 
-import IndexPage from "@/pages/Index";
+import Index from "@/components/IndexComponent";
 
 export default function Home() {
-  return <IndexPage />;
+  return <Index />;
 }
