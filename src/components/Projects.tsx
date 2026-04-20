@@ -5,6 +5,13 @@ import { Github, ExternalLink, Code, Eye } from "lucide-react";
 const Projects = () => {
   const webProjects = [
     {
+      title: "AI Word to Google Form Converter",
+      description: "Aplikasi web cerdas untuk mengubah dokumen Word/DOCX menjadi Google Form secara otomatis yang terintegrasi dengan Gemini AI.",
+      tech: ["Next.js", "React", "Gemini AI", "Tailwind"],
+      github: "https://github.com/Fahrizp24/word-to-form-nextjs-app",
+      link: "https://word-to-form-nextjs-app.vercel.app/"
+    },
+    {
       title: "Sistem Informasi Akademik",
       description: "Aplikasi web untuk manajemen data akademik dengan fitur lengkap termasuk dashboard interaktif, manajemen mahasiswa, dan pelaporan",
       tech: ["Laravel", "MySQL", "Bootstrap"],
