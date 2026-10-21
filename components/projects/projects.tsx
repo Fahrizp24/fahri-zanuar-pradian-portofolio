@@ -183,12 +183,11 @@ export function Projects({
         ) : null}
 
         {[
-          { id: "ai", title: "AI, Machine Learning, & Computer Vision" },
-          { id: "website", title: "Website Projects" },
+          { id: ["website", "ai"], title: "Projects" }
         ].map((group) => {
-          const groupItems = items.filter((project) => project.category === group.id);
+          const groupItems = items.filter((project) => group.id.includes(project.category));
           return (
-            <div key={group.id} className="mb-16 last:mb-0">
+            <div key={group.id.join("-")} className="mb-16 last:mb-0">
               <h2 className="mb-6 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                 {group.title}
               </h2>
