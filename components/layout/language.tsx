@@ -35,6 +35,8 @@ const COPY: Record<string, Record<Language, string>> = {
   openWeb: { id: "Buka aplikasi", en: "Open web app" },
   viewProject: { id: "Lihat proyek", en: "View project" },
   openColab: { id: "Buka Colab", en: "Open Colab" },
+  projectCatatDongTitle: { id: "CatatDong", en: "CatatDong" },
+  projectCatatDongDesc: { id: "Aplikasi pencatat pengeluaran harian dengan kalkulator jatah jajan bulanan.", en: "A daily expense tracker with a monthly spending allowance calculator." },
   projectWordTitle: { id: "AI Word ke Google Form", en: "AI Word to Google Form Converter" },
   projectWordDesc: { id: "Mengubah dokumen Word/DOCX menjadi Google Form secara otomatis dengan Gemini AI.", en: "Automatically turns Word/DOCX documents into Google Forms with Gemini AI." },
   projectSafeTitle: { id: "SafeBand", en: "SafeBand" },
