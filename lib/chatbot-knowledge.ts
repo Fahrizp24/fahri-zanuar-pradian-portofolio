@@ -44,9 +44,9 @@ export const KNOWLEDGE: KnowledgeSection[] = [
       "kerja sama", "collaborate", "kolaborasi", "open to work", "available",
     ],
     id_text:
-      "Untuk klien freelance, Fahri menawarkan tiga layanan AI utama: (1) pembuatan chatbot AI untuk bisnis, misalnya bot FAQ dan penangkap leads yang dilatih dari info klien; (2) otomasi alur kerja memakai n8n / Make / Zapier yang dihubungkan ke API LLM; (3) asisten pengetahuan RAG yang menjawab dari dokumen milik klien sendiri. Di luar itu ia juga terbuka untuk proyek web full-stack, AI, Computer Vision, dan IoT.",
+      "Untuk klien freelance, Fahri menawarkan tiga layanan AI utama:\n1. Pembuatan chatbot AI untuk bisnis, misalnya bot FAQ dan penangkap leads yang dilatih dari info klien.\n2. Otomasi alur kerja memakai n8n / Make / Zapier yang dihubungkan ke API LLM.\n3. Asisten pengetahuan RAG yang menjawab dari dokumen milik klien sendiri.\nDi luar itu ia juga terbuka untuk proyek web full-stack, AI, Computer Vision, dan IoT.",
     en_text:
-      "For freelance clients, Fahri offers three main AI services: (1) AI chatbots for businesses, such as FAQ and lead-capture bots trained on the client's own information; (2) workflow automation with n8n / Make / Zapier connected to LLM APIs; (3) RAG knowledge assistants that answer from the client's own documents. He is also open to full-stack web, AI, Computer Vision, and IoT projects.",
+      "For freelance clients, Fahri offers three main AI services:\n1. AI chatbots for businesses, such as FAQ and lead-capture bots trained on the client's own information.\n2. Workflow automation with n8n / Make / Zapier connected to LLM APIs.\n3. RAG knowledge assistants that answer from the client's own documents.\nHe is also open to full-stack web, AI, Computer Vision, and IoT projects.",
   },
   {
     id: "chatbot-service",
@@ -89,9 +89,9 @@ export const KNOWLEDGE: KnowledgeSection[] = [
       "karya", "work", "built", "aplikasi apa",
     ],
     id_text:
-      "Beberapa proyek Fahri: (1) AI Word to Google Form Converter, mengubah DOCX menjadi Google Form otomatis dengan Gemini AI (Next.js); (2) SafeBand, teknologi wearable IoT untuk keamanan pengguna (ESP32); (3) SafeForm, gateway anti-kecurangan Google Form dengan fullscreen lock dan deteksi pelanggaran real-time; (4) Sistem Pencatatan Prestasi Mahasiswa JTI Polinema (Laravel); (5) Sistem Pelaporan dan Perbaikan Fasilitas Kampus (Laravel); (6) CatatDong, aplikasi pencatat pengeluaran (Next.js); (7) Computer Vision: Vehicle Detection (Python, YOLOv8); (8) Emotion AI, deteksi ekspresi wajah real-time (TensorFlow, CNN). Detailnya ada di halaman Projects situs ini.",
+      "Beberapa proyek Fahri:\n1. AI Word to Google Form Converter, mengubah DOCX menjadi Google Form otomatis dengan Gemini AI (Next.js).\n2. SafeBand, teknologi wearable IoT untuk keamanan pengguna (ESP32).\n3. SafeForm, gateway anti-kecurangan Google Form dengan fullscreen lock dan deteksi pelanggaran real-time.\n4. Sistem Pencatatan Prestasi Mahasiswa JTI Polinema (Laravel).\n5. Sistem Pelaporan dan Perbaikan Fasilitas Kampus (Laravel).\n6. CatatDong, aplikasi pencatat pengeluaran (Next.js).\n7. Computer Vision: Vehicle Detection (Python, YOLOv8).\n8. Emotion AI, deteksi ekspresi wajah real-time (TensorFlow, CNN).\nDetailnya ada di halaman Projects situs ini.",
     en_text:
-      "Some of Fahri's projects: (1) AI Word to Google Form Converter, which turns DOCX files into Google Forms automatically with Gemini AI (Next.js); (2) SafeBand, IoT wearable technology for user safety (ESP32); (3) SafeForm, a Google Form anti-cheating gateway with fullscreen lock and real-time violation detection; (4) JTI Polinema Student Achievement Management System (Laravel); (5) Campus Facility Reporting and Maintenance System (Laravel); (6) CatatDong, an expense tracker app (Next.js); (7) Computer Vision: Vehicle Detection (Python, YOLOv8); (8) Emotion AI, real-time facial expression detection (TensorFlow, CNN). Details are on this site's Projects page.",
+      "Some of Fahri's projects:\n1. AI Word to Google Form Converter, which turns DOCX files into Google Forms automatically with Gemini AI (Next.js).\n2. SafeBand, IoT wearable technology for user safety (ESP32).\n3. SafeForm, a Google Form anti-cheating gateway with fullscreen lock and real-time violation detection.\n4. JTI Polinema Student Achievement Management System (Laravel).\n5. Campus Facility Reporting and Maintenance System (Laravel).\n6. CatatDong, an expense tracker app (Next.js).\n7. Computer Vision: Vehicle Detection (Python, YOLOv8).\n8. Emotion AI, real-time facial expression detection (TensorFlow, CNN).\nDetails are on this site's Projects page.",
   },
   {
     id: "skills",

@@ -100,6 +100,51 @@ function loadVisitor(): { id: string; count: number } {
   }
 }
 
+function renderInline(text: string): ReactNode[] {
+  const parts = text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\(https?:[^)\s]+\))/g);
+  return parts.map((part, i) => {
+    const bold = /^\*\*([^*]+)\*\*$/.exec(part);
+    if (bold) return <strong key={i}>{bold[1]}</strong>;
+    const link = /^\[([^\]]+)\]\((https?:[^)\s]+)\)$/.exec(part);
+    if (link)
+      return (
+        <a
+          key={i}
+          href={link[2]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-2"
+        >
+          {link[1]}
+        </a>
+      );
+    return <span key={i}>{part}</span>;
+  });
+}
+
+/** Minimal rich text for bot answers: line breaks, bullets, bold, links. */
+function RichText({ text }: { text: string }): ReactNode {
+  const lines = text
+    .split(/\n+/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  return (
+    <div className="flex flex-col gap-1.5">
+      {lines.map((line, i) => {
+        const bullet = /^[-•]\s+(.*)$/.exec(line);
+        if (bullet)
+          return (
+            <p key={i} className="flex gap-2">
+              <span aria-hidden="true">•</span>
+              <span>{renderInline(bullet[1] ?? "")}</span>
+            </p>
+          );
+        return <p key={i}>{renderInline(line)}</p>;
+      })}
+    </div>
+  );
+}
+
 export function PortfolioChat(): ReactNode {
   const { language } = useLanguage();
   const lang: Lang = language === "id" ? "id" : "en";
@@ -204,7 +249,7 @@ export function PortfolioChat(): ReactNode {
         <div
           role="dialog"
           aria-label={ui.title}
-          className="fixed right-4 bottom-24 z-50 flex h-[min(70vh,560px)] w-[min(92vw,380px)] flex-col overflow-hidden rounded-3xl border border-foreground/10 bg-background shadow-2xl sm:right-6"
+          className="fixed right-4 bottom-24 z-50 flex h-[min(82vh,660px)] w-[min(94vw,460px)] flex-col overflow-hidden rounded-3xl border border-foreground/10 bg-background shadow-2xl sm:right-6"
         >
           <div className="flex items-start justify-between gap-3 border-b border-foreground/8 px-5 py-4">
             <div>
@@ -226,7 +271,16 @@ export function PortfolioChat(): ReactNode {
             </button>
           </div>
 
-          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+          <div
+            ref={scrollRef}
+            data-lenis-prevent
+            data-lenis-prevent-wheel
+            data-lenis-prevent-touch
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            style={{ overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}
+            className="flex-1 space-y-3 overflow-y-auto px-4 py-4"
+          >
             {messages.map((m, i) => (
               <div
                 key={i}
@@ -235,11 +289,15 @@ export function PortfolioChat(): ReactNode {
                 <div
                   className={
                     m.role === "user"
-                      ? "max-w-[85%] rounded-2xl rounded-br-md bg-foreground px-3.5 py-2.5 text-[14px] leading-relaxed text-background"
-                      : "max-w-[85%] rounded-2xl rounded-bl-md bg-foreground/5 px-3.5 py-2.5 text-[14px] leading-relaxed text-foreground"
+                      ? "max-w-[90%] rounded-2xl rounded-br-md bg-foreground px-3.5 py-2.5 text-[14px] leading-relaxed text-background"
+                      : "max-w-[90%] rounded-2xl rounded-bl-md bg-foreground/5 px-3.5 py-2.5 text-[14px] leading-relaxed text-foreground"
                   }
                 >
-                  <p>{m.text}</p>
+                  {m.role === "assistant" ? (
+                    <RichText text={m.text} />
+                  ) : (
+                    <p className="whitespace-pre-wrap">{m.text}</p>
+                  )}
                   {m.role === "assistant" && m.source === "gemini" && (
                     <p className="mt-1 text-[11px] text-foreground/45">{ui.sourceGemini}</p>
                   )}
