@@ -312,6 +312,18 @@ export function PortfolioChat(): ReactNode {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
+  // If the visitor toggles the site language before asking anything,
+  // re-render the greeting in the new language instead of leaving the
+  // old one behind. Conversations already in progress are untouched.
+  useEffect(() => {
+    setMessages((prev) => {
+      if (prev.length === 0) return prev;
+      if (prev.some((m) => m.role === "user")) return prev;
+      return [{ role: "assistant", text: ui.greeting }];
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
+
   // Auto-scroll to the newest message only while the visitor is already
   // near the bottom, so scrolling up to re-read an answer is never
   // yanked back down when a new message or the loading state arrives.
@@ -395,15 +407,15 @@ export function PortfolioChat(): ReactNode {
         <div
           role="dialog"
           aria-label={ui.title}
-          className="border-foreground/10 bg-background fixed right-4 bottom-24 z-50 flex h-[min(88vh,780px)] w-[min(94vw,600px)] flex-col overflow-hidden rounded-3xl border shadow-2xl sm:right-6"
+          className="border-foreground/10 bg-background fixed inset-x-3 bottom-[5.5rem] z-50 flex h-[min(66dvh,540px)] max-h-[calc(100dvh-7rem)] flex-col overflow-hidden rounded-3xl border shadow-2xl sm:inset-x-auto sm:right-6 sm:bottom-24 sm:h-[min(600px,calc(100dvh-10rem))] sm:max-h-none sm:w-[min(430px,calc(100vw-3rem))]"
         >
-          <div className="border-foreground/8 flex items-start justify-between gap-3 border-b px-5 py-4">
+          <div className="border-foreground/8 flex items-start justify-between gap-3 border-b px-4 py-3 sm:px-5 sm:py-4">
             <div>
-              <p className="text-foreground text-[15px] font-semibold tracking-tight">
+              <p className="text-foreground text-[14px] font-semibold tracking-tight sm:text-[15px]">
                 {ui.title}
               </p>
-              <p className="text-foreground/55 text-[12px]">{ui.subtitle}</p>
-              <p className="text-foreground/70 mt-1 text-[12px] font-medium">
+              <p className="text-foreground/55 text-[11px] sm:text-[12px]">{ui.subtitle}</p>
+              <p className="text-foreground/70 mt-1 text-[11px] font-medium sm:text-[12px]">
                 {ui.remaining(remaining)}
               </p>
             </div>
@@ -479,7 +491,7 @@ export function PortfolioChat(): ReactNode {
                     key={chip}
                     type="button"
                     onClick={() => void send(chip)}
-                    className="focus-ring border-foreground/12 text-foreground/75 hover:border-foreground/25 hover:text-foreground rounded-full border px-3 py-1.5 text-left text-[12.5px] transition-colors"
+                    className="focus-ring border-foreground/12 text-foreground/75 hover:border-foreground/25 hover:text-foreground rounded-full border px-2.5 py-1.5 text-left text-[12px] transition-colors sm:px-3 sm:text-[12.5px]"
                   >
                     {chip}
                   </button>
@@ -523,7 +535,7 @@ export function PortfolioChat(): ReactNode {
                 placeholder={ui.placeholder}
                 maxLength={500}
                 aria-label={ui.placeholder}
-                className="border-foreground/12 text-foreground placeholder:text-foreground/40 focus:border-foreground/30 min-w-0 flex-1 rounded-full border bg-transparent px-3.5 py-2 text-[14px] outline-none"
+                className="border-foreground/12 text-foreground placeholder:text-foreground/40 focus:border-foreground/30 min-w-0 flex-1 rounded-full border bg-transparent px-3.5 py-2 text-[16px] outline-none sm:text-[14px]"
               />
               <button
                 type="submit"
@@ -542,7 +554,7 @@ export function PortfolioChat(): ReactNode {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? ui.closeLabel : ui.openLabel}
-        className="focus-ring bg-foreground text-background fixed right-4 bottom-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full shadow-xl transition-transform hover:scale-105 sm:right-6"
+        className="focus-ring bg-foreground text-background fixed right-4 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-50 inline-flex h-14 w-14 items-center justify-center rounded-full shadow-xl transition-transform hover:scale-105 sm:right-6"
       >
         {open ? (
           <X className="h-6 w-6" aria-hidden="true" />

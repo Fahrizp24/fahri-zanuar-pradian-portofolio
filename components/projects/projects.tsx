@@ -173,17 +173,16 @@ export function Projects({
         {withHeadline ? (
           <FadeIn className="flex flex-col items-center gap-5 pt-12 pb-8 text-center sm:pt-14 sm:pb-10">
             <h2 className="font-serif text-[2.5rem] font-medium leading-[1.05] tracking-tight text-foreground md:text-[3rem] lg:text-[3.5rem]">
-              My projects
+              {t("projectHeadline")}
             </h2>
             <p className="max-w-[33ch] text-[18px] leading-[1.45] tracking-tight text-foreground/65 sm:text-[20px]">
-              From playful experiments to thoughtful systems, a look at the
-              work I&rsquo;m proud to have shipped.
+              {t("projectTagline")}
             </p>
           </FadeIn>
         ) : null}
 
         {[
-          { id: ["website", "ai"], title: "Projects" }
+          { id: ["website", "ai"], title: t("projects") }
         ].map((group) => {
           const groupItems = items.filter((project) => group.id.includes(project.category));
           return (
@@ -230,6 +229,7 @@ function ProjectCard({
 }): ReactNode {
   const Icon = project.icon;
   const copyKey = project.id === "word-to-form" ? "Word" : project.id === "safeband" ? "Safe" : project.id === "fasilitas" ? "Fixit" : project.id === "safeform" ? "SafeForm" : project.id === "prestasi" ? "Prestasi" : project.id === "vision-vehicle-detection" ? "Vision" : project.id === "catatdong" ? "CatatDong" : "Emotion";
+  const actionLabel = project.hrefLabel === "Open Colab" ? t("openColab") : project.hrefLabel === "Open web app" ? t("openWeb") : t("viewProject");
   return (
     <FadeIn
       delay={Math.min(index * 0.06, 0.3)}
@@ -239,7 +239,7 @@ function ProjectCard({
         href={project.href}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`${project.hrefLabel}: ${t(`project${copyKey}Title`)}`}
+        aria-label={`${actionLabel}: ${t(`project${copyKey}Title`)}`}
         className="project-card block rounded-3xl focus-ring"
       >
         <article className="flex cursor-pointer flex-col gap-4 rounded-3xl border border-foreground/8 bg-background p-3 transition-colors hover:border-foreground/20 sm:p-3.5">
@@ -286,7 +286,7 @@ function ProjectCard({
               {project.meta}
             </p>
             <span className="shrink-0 text-[12px] font-medium tracking-tight text-foreground/60">
-              {project.hrefLabel === "Open Colab" ? t("openColab") : project.hrefLabel === "Open web app" ? t("openWeb") : t("viewProject")}
+              {actionLabel}
             </span>
           </div>
         </article>
