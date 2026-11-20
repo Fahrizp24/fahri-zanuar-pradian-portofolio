@@ -78,6 +78,14 @@ const COPY: Record<string, Record<Language, string>> = {
   certDqlabPandas1Title: { id: "Data Manipulation with Pandas — Part 1", en: "Data Manipulation with Pandas — Part 1" },
   certDqlabPandas2Title: { id: "Data Manipulation with Pandas — Part 2", en: "Data Manipulation with Pandas — Part 2" },
   certBaturWinnerTitle: { id: "Juara II — Batur Geopark Literacy Competition", en: "Second Place — Batur Geopark Literacy Competition" },
+  projectTagline: { id: "Dari eksperimen yang menyenangkan sampai sistem yang dipikirkan dengan serius, inilah karya yang bangga pernah saya selesaikan.", en: "From playful experiments to thoughtful systems, a look at the work I’m proud to have shipped." },
+  builtWith: { id: "Dibangun dengan Next.js", en: "Built with Next.js" },
+  skipToContent: { id: "Lewati ke konten utama", en: "Skip to main content" },
+  showEmail: { id: "Tampilkan email", en: "Show email" },
+  copyEmail: { id: "Salin", en: "Copy" },
+  emailCopied: { id: "Email tersalin", en: "Email copied" },
+  seeProjects: { id: "Lihat proyek", en: "See projects" },
+  resetStack: { id: "Atur ulang tumpukan", en: "Reset stack" },
   certBaturParticipationTitle: { id: "Penghargaan Peran Serta — Batur Geopark Literacy Competition", en: "Certificate of Participation — Batur Geopark Literacy Competition" },
 };
 
@@ -106,7 +114,7 @@ export function useLanguage(): LanguageContextValue {
 export function LanguageToggle(): ReactNode {
   const { language, setLanguage } = useLanguage();
   return (
-    <div className="fixed top-6 right-6 z-50 flex items-center gap-1" aria-label="Language">
+    <div className="fixed top-[4.25rem] right-4 z-50 flex items-center gap-1 sm:top-6 sm:right-6" aria-label="Language">
       {(["id", "en"] as const).map((item) => (
         <button
           key={item}

@@ -69,7 +69,7 @@ export function ContactCard(): ReactNode {
                     2026 &copy; Fahri Zanuar Pradian
                   </p>
                   <p className="text-[12px] tracking-tight text-foreground/45">
-                    Built with Next.js
+                    {t("builtWith")}
                   </p>
                 </div>
               </div>

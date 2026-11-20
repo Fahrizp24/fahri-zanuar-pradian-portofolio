@@ -156,7 +156,7 @@ export function Nav(): ReactNode {
     <>
       <nav
       aria-label="Primary"
-      className="fixed left-1/2 top-6 z-50 -translate-x-1/2"
+      className="fixed left-1/2 top-4 z-50 max-w-[calc(100vw-1rem)] -translate-x-1/2 sm:top-6"
     >
       <div className="flex items-center gap-1 rounded-full bg-background p-1.5 shadow-sm border border-foreground/8">
         <ul ref={listRef} className="relative flex items-center gap-1">
@@ -187,7 +187,7 @@ export function Nav(): ReactNode {
                 <Link
                   href={item.href}
                   aria-current={isActive ? "page" : undefined}
-                  className="focus-ring relative inline-flex cursor-pointer items-center justify-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors duration-300"
+                  className="focus-ring relative inline-flex cursor-pointer items-center justify-center rounded-full px-2.5 py-1.5 text-[13px] font-medium transition-colors duration-300 min-[420px]:px-3 sm:px-4 sm:text-sm"
                 >
                   <span
                     className={

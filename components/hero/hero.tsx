@@ -21,14 +21,14 @@ export function Hero(): ReactNode {
               {t("hello")}
             </p>
 
-            <h1 className="text-[2.75rem] font-medium leading-[1.05] tracking-tight text-foreground md:text-[2.5rem] lg:text-[3.65rem]">
-              <span className="block whitespace-nowrap">
+            <h1 className="text-[clamp(2rem,10vw,2.75rem)] font-medium leading-[1.05] tracking-tight text-foreground md:text-[2.5rem] lg:text-[3.65rem]">
+              <span className="block sm:whitespace-nowrap">
                 {t("heroTitle")}
               </span>
-              <span className="block whitespace-nowrap">{t("heroTitle2")}</span>
+              <span className="block sm:whitespace-nowrap">{t("heroTitle2")}</span>
             </h1>
 
-            <p className="max-w-[34ch] text-[22px] leading-[1.4] tracking-tight text-foreground/65">
+            <p className="max-w-[34ch] text-[clamp(1.05rem,4.6vw,1.375rem)] leading-[1.45] tracking-tight text-foreground/65">
               {t("heroDescription")}
             </p>
 

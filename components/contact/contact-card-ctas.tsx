@@ -5,11 +5,14 @@ import { LayoutGroup, motion } from "motion/react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { useLanguage } from "@/components/layout/language";
+
 import { ContactButton } from "./contact-button";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function ContactCardCtas(): ReactNode {
+  const { t } = useLanguage();
   return (
     <LayoutGroup>
       <motion.div
@@ -27,7 +30,7 @@ export function ContactCardCtas(): ReactNode {
             href="/projects"
             className="border border-foreground/5 focus-ring group inline-flex cursor-pointer items-center gap-2 rounded-xl bg-background px-5 py-2.5 text-sm font-medium text-foreground shadow-md/2 transition-colors"
           >
-            See projects
+            {t("seeProjects")}
             <ArrowRight
               className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5"
               aria-hidden="true"

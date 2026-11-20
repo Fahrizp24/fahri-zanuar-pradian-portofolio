@@ -1,3 +1,4 @@
+import { PortfolioChat } from "@/components/chat/portfolio-chat";
 import { Nav } from "@/components/layout/nav";
 import { PageBackdrop } from "@/components/layout/page-backdrop";
 import { Providers } from "@/components/layout/providers";
@@ -63,6 +64,7 @@ export default function RootLayout({
           <PageBackdrop />
           <Nav />
           {children}
+          <PortfolioChat />
         </Providers>
       </body>
     </html>
