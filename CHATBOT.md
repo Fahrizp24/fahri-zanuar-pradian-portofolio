@@ -71,3 +71,10 @@ Upstash Redis keyed by the same visitor id / IP hash.
   reach-out message and Email / LinkedIn buttons.
 - Temporarily remove `GEMINI_API_KEY` in a preview env: answers should
   still come back, labelled local mode.
+- Scroll inside the chatbox: hovering the message area and scrolling must
+  scroll the messages, never the page behind (Lenis smooth scroll is
+  stopped with native listeners, not React `onWheel` — see the comment
+  in `portfolio-chat.tsx`).
+- Lists render as real lists: numbered/bulleted answers, including a
+  one-paragraph "(1) …; (2) …; (3) …" answer from Gemini, show as a
+  numbered list with an intro line, not one flat paragraph.

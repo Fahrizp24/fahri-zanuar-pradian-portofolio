@@ -1,7 +1,13 @@
 "use client";
 
 import { Linkedin, Mail, MessageCircle, Send, X } from "lucide-react";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 
 import { useLanguage } from "@/components/layout/language";
 import { CONTACT } from "@/lib/chatbot-knowledge";
@@ -122,24 +128,137 @@ function renderInline(text: string): ReactNode[] {
   });
 }
 
-/** Minimal rich text for bot answers: line breaks, bullets, bold, links. */
-function RichText({ text }: { text: string }): ReactNode {
+/** Minimal rich text for bot answers: paragraphs, numbered/bulleted lists, bold, links. */
+function parseBlocks(text: string): Block[] {
   const lines = text
     .split(/\n+/)
     .map((l) => l.trim())
     .filter(Boolean);
+  const blocks: Block[] = [];
+  const push = (b: Block): void => {
+    const last = blocks[blocks.length - 1];
+    if (b.kind === "ol" && last?.kind === "ol") {
+      last.items.push(...b.items);
+      return;
+    }
+    if (b.kind === "ul" && last?.kind === "ul") {
+      last.items.push(...b.items);
+      return;
+    }
+    blocks.push(b);
+  };
+  for (const line of lines) {
+    const ordered = /^\(?(\d+)[.)]\s+(.*)$/.exec(line);
+    if (ordered) {
+      push({ kind: "ol", items: [ordered[2] ?? ""] });
+      continue;
+    }
+    const bullet = /^[-•]\s+(.*)$/.exec(line);
+    if (bullet) {
+      push({ kind: "ul", items: [bullet[1] ?? ""] });
+      continue;
+    }
+    const inline = splitInlineNumbered(line);
+    if (inline) {
+      if (inline.intro) push({ kind: "p", text: inline.intro });
+      push({ kind: "ol", items: inline.items });
+      if (inline.tail) push({ kind: "p", text: inline.tail });
+      continue;
+    }
+    push({ kind: "p", text: line });
+  }
+  return blocks;
+}
+
+/**
+ * Split one long line such as "… utama: (1) foo; (2) bar; (3) baz."
+ * into an intro, numbered items and an optional trailing sentence.
+ * Returns null unless at least two sequential numbered markers are found.
+ */
+function splitInlineNumbered(line: string): {
+  intro: string;
+  items: string[];
+  tail: string;
+} | null {
+  const markerRe = /\(?(\d+)\)?[.)]\s+/g;
+  const markers: { index: number; end: number; num: number }[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = markerRe.exec(line)) !== null) {
+    // Only accept markers that start a list item: at the start of the
+    // line, or right after ": ", "; " or ". ".
+    const before = line.slice(Math.max(0, m.index - 2), m.index);
+    if (m.index !== 0 && before !== ": " && before !== "; " && before !== ". ")
+      continue;
+    markers.push({
+      index: m.index,
+      end: m.index + m[0].length,
+      num: Number(m[1]),
+    });
+  }
+  if (markers.length < 2) return null;
+  // Markers must be sequential (1, 2, 3 …) so "version 2.0" style
+  // numbers never become a list.
+  for (let i = 1; i < markers.length; i += 1) {
+    if (markers[i]!.num !== markers[i - 1]!.num + 1) return null;
+  }
+  const first = markers[0]!;
+  const intro = line
+    .slice(0, first.index)
+    .replace(/[:;\s]+$/, "")
+    .trim();
+  const items: string[] = [];
+  let tail = "";
+  markers.forEach((mk, i) => {
+    const next = markers[i + 1];
+    let segment = line
+      .slice(mk.end, next ? next.index : line.length)
+      .replace(/[;\s]+$/, "")
+      .trim();
+    if (!next) {
+      // A trailing sentence after the last item, e.g. "… sendiri. Di luar
+      // itu …", belongs in its own paragraph, not inside the last item.
+      const cut = segment.search(/\.\s+[A-ZÀ-Þ]/);
+      if (cut > 0) {
+        tail = segment.slice(cut + 2).trim();
+        segment = segment.slice(0, cut + 1).trim();
+      }
+    }
+    if (segment) items.push(segment);
+  });
+  if (items.length < 2) return null;
+  return { intro, items, tail };
+}
+
+type Block =
+  | { kind: "p"; text: string }
+  | { kind: "ol"; items: string[] }
+  | { kind: "ul"; items: string[] };
+
+function RichText({ text }: { text: string }): ReactNode {
   return (
     <div className="flex flex-col gap-1.5">
-      {lines.map((line, i) => {
-        const bullet = /^[-•]\s+(.*)$/.exec(line);
-        if (bullet)
+      {parseBlocks(text).map((block, i) => {
+        if (block.kind === "ol")
           return (
-            <p key={i} className="flex gap-2">
-              <span aria-hidden="true">•</span>
-              <span>{renderInline(bullet[1] ?? "")}</span>
-            </p>
+            <ol key={i} className="list-decimal space-y-1.5 pl-5">
+              {block.items.map((item, j) => (
+                <li key={j} className="pl-1">
+                  {renderInline(item)}
+                </li>
+              ))}
+            </ol>
           );
-        return <p key={i}>{renderInline(line)}</p>;
+        if (block.kind === "ul")
+          return (
+            <ul key={i} className="list-disc space-y-1.5 pl-5">
+              {block.items.map((item, j) => (
+                <li key={j} className="pl-1">
+                  {renderInline(item)}
+                </li>
+              ))}
+            </ul>
+          );
+        return <p key={i}>{renderInline(block.text)}</p>;
       })}
     </div>
   );
@@ -157,6 +276,7 @@ export function PortfolioChat(): ReactNode {
   const [remaining, setRemaining] = useState<number>(MAX_QUESTIONS_PER_VISITOR);
   const visitorRef = useRef<string>("anonymous");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const stickToBottomRef = useRef(true);
 
   useEffect(() => {
     const { id, count } = loadVisitor();
@@ -164,15 +284,41 @@ export function PortfolioChat(): ReactNode {
     setRemaining(Math.max(0, MAX_QUESTIONS_PER_VISITOR - count));
   }, []);
 
+  // Scrolling inside the chatbox must never reach the page behind it:
+  // the site uses Lenis smooth scroll, whose wheel/touch listeners sit on
+  // `window`. React's onWheel/onTouchMove stopPropagation only stops the
+  // React tree, not that native window listener, so the page scrolled
+  // instead of the chatbox. A native listener on the scroll container
+  // stops propagation before the event reaches `window`.
+  useEffect(() => {
+    if (!open) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    const stop = (e: Event): void => {
+      e.stopPropagation();
+    };
+    el.addEventListener("wheel", stop, { passive: true });
+    el.addEventListener("touchmove", stop, { passive: true });
+    return () => {
+      el.removeEventListener("wheel", stop);
+      el.removeEventListener("touchmove", stop);
+    };
+  }, [open]);
+
   useEffect(() => {
     if (open && messages.length === 0) {
       setMessages([{ role: "assistant", text: ui.greeting }]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open ]);
+  }, [open]);
 
+  // Auto-scroll to the newest message only while the visitor is already
+  // near the bottom, so scrolling up to re-read an answer is never
+  // yanked back down when a new message or the loading state arrives.
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
+    const el = scrollRef.current;
+    if (!el || !stickToBottomRef.current) return;
+    el.scrollTo({ top: el.scrollHeight });
   }, [messages, open, loading]);
 
   const limitReached = remaining <= 0;
@@ -220,7 +366,7 @@ export function PortfolioChat(): ReactNode {
       try {
         window.localStorage.setItem(
           COUNT_KEY,
-          String(MAX_QUESTIONS_PER_VISITOR - next),
+          String(MAX_QUESTIONS_PER_VISITOR - next)
         );
       } catch {
         // storage unavailable; server-side counter still applies
@@ -249,15 +395,15 @@ export function PortfolioChat(): ReactNode {
         <div
           role="dialog"
           aria-label={ui.title}
-          className="fixed right-4 bottom-24 z-50 flex h-[min(82vh,660px)] w-[min(94vw,460px)] flex-col overflow-hidden rounded-3xl border border-foreground/10 bg-background shadow-2xl sm:right-6"
+          className="border-foreground/10 bg-background fixed right-4 bottom-24 z-50 flex h-[min(88vh,780px)] w-[min(94vw,600px)] flex-col overflow-hidden rounded-3xl border shadow-2xl sm:right-6"
         >
-          <div className="flex items-start justify-between gap-3 border-b border-foreground/8 px-5 py-4">
+          <div className="border-foreground/8 flex items-start justify-between gap-3 border-b px-5 py-4">
             <div>
-              <p className="text-[15px] font-semibold tracking-tight text-foreground">
+              <p className="text-foreground text-[15px] font-semibold tracking-tight">
                 {ui.title}
               </p>
-              <p className="text-[12px] text-foreground/55">{ui.subtitle}</p>
-              <p className="mt-1 text-[12px] font-medium text-foreground/70">
+              <p className="text-foreground/55 text-[12px]">{ui.subtitle}</p>
+              <p className="text-foreground/70 mt-1 text-[12px] font-medium">
                 {ui.remaining(remaining)}
               </p>
             </div>
@@ -265,7 +411,7 @@ export function PortfolioChat(): ReactNode {
               type="button"
               onClick={() => setOpen(false)}
               aria-label={ui.closeLabel}
-              className="focus-ring inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-foreground/10 text-foreground/70 transition-colors hover:text-foreground"
+              className="focus-ring border-foreground/10 text-foreground/70 hover:text-foreground inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors"
             >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -276,21 +422,29 @@ export function PortfolioChat(): ReactNode {
             data-lenis-prevent
             data-lenis-prevent-wheel
             data-lenis-prevent-touch
-            onWheel={(e) => e.stopPropagation()}
-            onTouchMove={(e) => e.stopPropagation()}
-            style={{ overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}
+            onScroll={(e) => {
+              const el = e.currentTarget;
+              stickToBottomRef.current =
+                el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+            }}
+            style={{
+              overscrollBehavior: "contain",
+              WebkitOverflowScrolling: "touch",
+            }}
             className="flex-1 space-y-3 overflow-y-auto px-4 py-4"
           >
             {messages.map((m, i) => (
               <div
                 key={i}
-                className={m.role === "user" ? "flex justify-end" : "flex justify-start"}
+                className={
+                  m.role === "user" ? "flex justify-end" : "flex justify-start"
+                }
               >
                 <div
                   className={
                     m.role === "user"
-                      ? "max-w-[90%] rounded-2xl rounded-br-md bg-foreground px-3.5 py-2.5 text-[14px] leading-relaxed text-background"
-                      : "max-w-[90%] rounded-2xl rounded-bl-md bg-foreground/5 px-3.5 py-2.5 text-[14px] leading-relaxed text-foreground"
+                      ? "bg-foreground text-background max-w-[90%] rounded-2xl rounded-br-md px-3.5 py-2.5 text-[14px] leading-relaxed"
+                      : "bg-foreground/5 text-foreground max-w-[90%] rounded-2xl rounded-bl-md px-3.5 py-2.5 text-[14px] leading-relaxed"
                   }
                 >
                   {m.role === "assistant" ? (
@@ -299,17 +453,21 @@ export function PortfolioChat(): ReactNode {
                     <p className="whitespace-pre-wrap">{m.text}</p>
                   )}
                   {m.role === "assistant" && m.source === "gemini" && (
-                    <p className="mt-1 text-[11px] text-foreground/45">{ui.sourceGemini}</p>
+                    <p className="text-foreground/45 mt-1 text-[11px]">
+                      {ui.sourceGemini}
+                    </p>
                   )}
                   {m.role === "assistant" && m.source === "local" && (
-                    <p className="mt-1 text-[11px] text-foreground/45">{ui.sourceLocal}</p>
+                    <p className="text-foreground/45 mt-1 text-[11px]">
+                      {ui.sourceLocal}
+                    </p>
                   )}
                 </div>
               </div>
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="rounded-2xl rounded-bl-md bg-foreground/5 px-3.5 py-2.5 text-[14px] text-foreground/55">
+                <div className="bg-foreground/5 text-foreground/55 rounded-2xl rounded-bl-md px-3.5 py-2.5 text-[14px]">
                   ...
                 </div>
               </div>
@@ -321,7 +479,7 @@ export function PortfolioChat(): ReactNode {
                     key={chip}
                     type="button"
                     onClick={() => void send(chip)}
-                    className="focus-ring rounded-full border border-foreground/12 px-3 py-1.5 text-left text-[12.5px] text-foreground/75 transition-colors hover:border-foreground/25 hover:text-foreground"
+                    className="focus-ring border-foreground/12 text-foreground/75 hover:border-foreground/25 hover:text-foreground rounded-full border px-3 py-1.5 text-left text-[12.5px] transition-colors"
                   >
                     {chip}
                   </button>
@@ -331,14 +489,14 @@ export function PortfolioChat(): ReactNode {
           </div>
 
           {limitReached ? (
-            <div className="border-t border-foreground/8 px-4 py-4">
-              <p className="mb-3 text-[13px] leading-relaxed text-foreground/70">
+            <div className="border-foreground/8 border-t px-4 py-4">
+              <p className="text-foreground/70 mb-3 text-[13px] leading-relaxed">
                 {limitMessage(lang)}
               </p>
               <div className="flex gap-2">
                 <a
                   href={`mailto:${CONTACT.email}`}
-                  className="focus-ring inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-3 py-2 text-[13px] font-medium text-background"
+                  className="focus-ring bg-foreground text-background inline-flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2 text-[13px] font-medium"
                 >
                   <Mail className="h-4 w-4" aria-hidden="true" />
                   {ui.email}
@@ -347,7 +505,7 @@ export function PortfolioChat(): ReactNode {
                   href={CONTACT.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="focus-ring inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-foreground/15 px-3 py-2 text-[13px] font-medium text-foreground"
+                  className="focus-ring border-foreground/15 text-foreground inline-flex flex-1 items-center justify-center gap-2 rounded-full border px-3 py-2 text-[13px] font-medium"
                 >
                   <Linkedin className="h-4 w-4" aria-hidden="true" />
                   {ui.linkedin}
@@ -357,7 +515,7 @@ export function PortfolioChat(): ReactNode {
           ) : (
             <form
               onSubmit={onSubmit}
-              className="flex items-center gap-2 border-t border-foreground/8 px-3 py-3"
+              className="border-foreground/8 flex items-center gap-2 border-t px-3 py-3"
             >
               <input
                 value={input}
@@ -365,13 +523,13 @@ export function PortfolioChat(): ReactNode {
                 placeholder={ui.placeholder}
                 maxLength={500}
                 aria-label={ui.placeholder}
-                className="min-w-0 flex-1 rounded-full border border-foreground/12 bg-transparent px-3.5 py-2 text-[14px] text-foreground outline-none placeholder:text-foreground/40 focus:border-foreground/30"
+                className="border-foreground/12 text-foreground placeholder:text-foreground/40 focus:border-foreground/30 min-w-0 flex-1 rounded-full border bg-transparent px-3.5 py-2 text-[14px] outline-none"
               />
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
                 aria-label={ui.send}
-                className="focus-ring inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-foreground text-background transition-opacity disabled:opacity-35"
+                className="focus-ring bg-foreground text-background inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-opacity disabled:opacity-35"
               >
                 <Send className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -384,7 +542,7 @@ export function PortfolioChat(): ReactNode {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? ui.closeLabel : ui.openLabel}
-        className="focus-ring fixed right-4 bottom-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-foreground text-background shadow-xl transition-transform hover:scale-105 sm:right-6"
+        className="focus-ring bg-foreground text-background fixed right-4 bottom-5 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full shadow-xl transition-transform hover:scale-105 sm:right-6"
       >
         {open ? (
           <X className="h-6 w-6" aria-hidden="true" />

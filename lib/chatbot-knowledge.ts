@@ -2,8 +2,10 @@
  * Grounding data for the portfolio chatbot.
  *
  * Every fact below comes from this portfolio site itself (hero, about,
- * skills, projects and contact sections) or from services Fahri has
- * publicly stated he offers to freelance clients. The chatbot must answer
+ * skills, projects and contact sections) or from work Fahri has publicly
+ * stated he can do. General capability questions ("bisa apa", "melayani
+ * apa", "what can he do") are answered with the full range of what he can
+ * do, not framed as freelance services only. The chatbot must answer
  * ONLY from this data. If a question is not covered here, it must say it
  * does not know and point the visitor to Fahri directly.
  */
@@ -39,14 +41,15 @@ export const KNOWLEDGE: KnowledgeSection[] = [
   {
     id: "services",
     keywords: [
-      "jasa", "service", "services", "layanan", "tawarkan", "ditawarkan",
-      "menawarkan", "offer", "bisa bikin", "can you build", "freelance",
-      "kerja sama", "collaborate", "kolaborasi", "open to work", "available",
+      "jasa", "service", "services", "layanan", "melayani", "tawarkan",
+      "ditawarkan", "menawarkan", "offer", "offers", "bisa bikin",
+      "can you build", "what can he do", "freelance", "kerja sama",
+      "collaborate", "kolaborasi", "open to work", "available",
     ],
     id_text:
-      "Untuk klien freelance, Fahri menawarkan tiga layanan AI utama:\n1. Pembuatan chatbot AI untuk bisnis, misalnya bot FAQ dan penangkap leads yang dilatih dari info klien.\n2. Otomasi alur kerja memakai n8n / Make / Zapier yang dihubungkan ke API LLM.\n3. Asisten pengetahuan RAG yang menjawab dari dokumen milik klien sendiri.\nDi luar itu ia juga terbuka untuk proyek web full-stack, AI, Computer Vision, dan IoT.",
+      "Fahri bisa mengerjakan banyak hal di bidang web dan AI:\n1. Pengembangan web full-stack, dari landing page sampai aplikasi web lengkap (Next.js, Laravel).\n2. Chatbot AI untuk bisnis, misalnya bot FAQ dan penangkap leads yang dilatih dari info pemilik bisnis.\n3. Otomasi alur kerja memakai n8n / Make / Zapier yang dihubungkan ke API LLM.\n4. Asisten pengetahuan RAG yang menjawab dari dokumen milik sendiri.\n5. Computer Vision dan Machine Learning, misalnya deteksi objek dan klasifikasi gambar.\n6. Sistem IoT dan embedded berbasis ESP32.\n7. Aplikasi mobile dengan Flutter.\nKalau kebutuhanmu belum ada di daftar ini, tanyakan saja langsung ke Fahri, siapa tahu tetap bisa dibantu.",
     en_text:
-      "For freelance clients, Fahri offers three main AI services:\n1. AI chatbots for businesses, such as FAQ and lead-capture bots trained on the client's own information.\n2. Workflow automation with n8n / Make / Zapier connected to LLM APIs.\n3. RAG knowledge assistants that answer from the client's own documents.\nHe is also open to full-stack web, AI, Computer Vision, and IoT projects.",
+      "Fahri can help with a wide range of web and AI work:\n1. Full-stack web development, from landing pages to complete web apps (Next.js, Laravel).\n2. AI chatbots for businesses, such as FAQ and lead-capture bots trained on the business's own information.\n3. Workflow automation with n8n / Make / Zapier connected to LLM APIs.\n4. RAG knowledge assistants that answer from your own documents.\n5. Computer Vision and Machine Learning, such as object detection and image classification.\n6. IoT and embedded systems based on ESP32.\n7. Mobile apps with Flutter.\nIf what you need is not on this list, just ask Fahri directly, he may still be able to help.",
   },
   {
     id: "chatbot-service",
@@ -193,9 +196,28 @@ function tokenize(text: string): string[] {
  * score clears the threshold, otherwise null (caller must refuse and
  * point the visitor to Fahri).
  */
+const CAPABILITY_PHRASES = [
+  "bisa apa",
+  "bisa ngapain",
+  "melayani apa",
+  "apa yang bisa",
+  "apa saja yang bisa",
+  "what can he do",
+  "what can you do",
+  "what does he do",
+];
+
 export function retrieveLocal(
   question: string,
 ): { section: KnowledgeSection; score: number } | null {
+  // General "what can he do / melayani apa" questions are capability
+  // questions, not specifically about freelance services. Their words
+  // are mostly stopwords, so match them on the raw phrase first.
+  const raw = question.toLowerCase();
+  if (CAPABILITY_PHRASES.some((p) => raw.includes(p))) {
+    const services = KNOWLEDGE.find((s) => s.id === "services");
+    if (services) return { section: services, score: 99 };
+  }
   const qTokens = new Set(tokenize(question));
   if (qTokens.size === 0) return null;
   let best: { section: KnowledgeSection; score: number } | null = null;
