@@ -347,6 +347,11 @@ export function PortfolioChat(): ReactNode {
       }));
     setMessages((prev) => [...prev, { role: "user", text: cleaned }]);
     setLoading(true);
+    // Keep the typing indicator visible for a minimum moment so even a
+    // fast (local) answer feels like the bot paused to think, instead
+    // of replying instantly.
+    const startedAt = Date.now();
+    const MIN_THINK_MS = 950;
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -364,6 +369,12 @@ export function PortfolioChat(): ReactNode {
         remaining?: number;
         error?: string;
       } = await res.json().catch(() => ({}));
+      const elapsed = Date.now() - startedAt;
+      if (elapsed < MIN_THINK_MS) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, MIN_THINK_MS - elapsed),
+        );
+      }
       if (!res.ok || !data.answer) {
         setMessages((prev) => [
           ...prev,
@@ -479,8 +490,18 @@ export function PortfolioChat(): ReactNode {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-foreground/5 text-foreground/55 rounded-2xl rounded-bl-md px-3.5 py-2.5 text-[14px]">
-                  ...
+                <div
+                  role="status"
+                  aria-label={lang === "id" ? "Sedang mengetik" : "Typing"}
+                  className="bg-foreground/5 flex items-center gap-1 rounded-2xl rounded-bl-md px-3.5 py-3"
+                >
+                  {[0, 1, 2].map((i) => (
+                    <span
+                      key={i}
+                      className="bg-foreground/55 h-1.5 w-1.5 animate-bounce rounded-full"
+                      style={{ animationDelay: `${i * 180}ms` }}
+                    />
+                  ))}
                 </div>
               </div>
             )}

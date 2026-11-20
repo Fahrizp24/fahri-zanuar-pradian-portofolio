@@ -234,6 +234,12 @@ export async function POST(req: NextRequest) {
   }
 
   // Local fallback: Gemini key missing, quota error, timeout, or outage.
+  // A short "thinking" pause so local answers do not appear instantly
+  // and feel robotic next to Gemini answers: the widget shows an
+  // animated three-dot typing indicator while it waits.
+  await new Promise((resolve) =>
+    setTimeout(resolve, 750 + (cleaned.length % 300)),
+  );
   const hit = retrieveLocal(cleaned);
   if (hit) {
     return NextResponse.json({

@@ -15,9 +15,16 @@ reading claims about one.
      instruction that contains only the knowledge below.
   2. **Local fallback**: if the key is missing, Gemini errors, times out
      (12s), or is over quota, the route answers from the same knowledge
-     base with keyword retrieval (`retrieveLocal`). The widget labels
-     these answers "Local mode" / "Mode lokal" so visitors are never
-     misled about what answered them.
+     base with retrieval (`retrieveLocal`): intent phrases on the raw
+     question first (so "How can I contact Fahri?" returns Contact, not
+     About), then keyword scoring where generic name tokens carry no
+     weight. The widget labels these answers "Local mode" / "Mode
+     lokal" so visitors are never misled about what answered them.
+     Local answers are enriched, structured texts (intro, list, closing)
+     in both languages, and the route pauses ~0.8s before returning one
+     while the widget shows an animated three-dot typing indicator
+     (minimum ~0.95s on screen), so local replies feel like the bot
+     paused to think instead of answering instantly.
 - Knowledge: `lib/chatbot-knowledge.ts`. Every fact comes from this site
   (hero, about, skills, projects, contact) plus the freelance services
   Fahri publicly offers. Edit that file to change what the bot may say.
