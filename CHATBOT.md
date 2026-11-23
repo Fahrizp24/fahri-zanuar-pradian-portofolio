@@ -11,8 +11,9 @@ reading claims about one.
   via `app/layout.tsx`). Bilingual ID/EN, follows the site language toggle.
 - API: `app/api/chat/route.ts` (Next.js route handler, runs on Vercel).
 - Brain, in order:
-  1. **Gemini** (`GEMINI_API_KEY`), grounded by a strict system
-     instruction that contains only the knowledge below.
+  1. **Gemini 3.5 Flash** (`GEMINI_API_KEY`), grounded by a strict system
+     instruction that contains only the knowledge below. The model is
+     pinned in `app/api/chat/route.ts` and is not env-configurable.
   2. **Local fallback**: if the key is missing, Gemini errors, times out
      (12s), or is over quota, the route answers from the same knowledge
      base with retrieval (`retrieveLocal`): intent phrases on the raw
@@ -61,7 +62,9 @@ Upstash Redis keyed by the same visitor id / IP hash.
 1. Project Settings -> Environment Variables (Production + Preview):
    - `GEMINI_API_KEY` = your Google AI Studio key (never commit it;
      `.env*` is gitignored).
-   - `GEMINI_MODEL` = optional, defaults to `gemini-3.5-flash`.
+   - No model variable: the engine is pinned in code to
+     `gemini-3.5-flash`, so a `GEMINI_MODEL` value in Vercel (if one
+     was ever set, it can be deleted) has no effect.
 2. Redeploy. Without the key the chatbot still works in local mode.
 3. Branch previews: every pushed branch gets a Vercel preview URL where
    the chatbot can be reviewed before merging to `main`.
