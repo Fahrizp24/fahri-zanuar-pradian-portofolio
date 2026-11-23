@@ -101,7 +101,10 @@ async function askGemini(
 ): Promise<string | null> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
-  const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
+  // Main engine, pinned (confirmed by Zanuar 2026-11-23): Gemini 3.5
+  // Flash. Deliberately NOT env-configurable, so a stray GEMINI_MODEL
+  // value in Vercel cannot silently switch the chatbot's engine.
+  const model = "gemini-3.5-flash";
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 12_000);
   try {
