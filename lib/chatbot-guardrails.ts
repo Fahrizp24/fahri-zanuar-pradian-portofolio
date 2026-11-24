@@ -4,9 +4,10 @@ import { CONTACT } from "./chatbot-knowledge";
  * Guardrails for the portfolio chatbot.
  *
  * Rules enforced here and in app/api/chat/route.ts:
- * 1. Each visitor may ask at most MAX_QUESTIONS_PER_VISITOR questions in
- *    total. After that, every request is refused with a message telling
- *    the visitor to reach out to Fahri directly.
+ * 1. Each visitor gets MAX_QUESTIONS_PER_VISITOR Gemini-answered
+ *    questions. After that the chat continues in local mode (answers
+ *    from the knowledge base, each ending with a short contact line)
+ *    instead of stopping.
  * 2. The bot answers ONLY from the portfolio knowledge base. Anything
  *    else gets a refusal + reach-out message, never an invented answer.
  * 3. Prompt-injection and jailbreak attempts are refused outright.
@@ -33,6 +34,12 @@ export function limitMessage(lang: Lang): string {
   return lang === "id"
     ? `Kamu sudah memakai ${MAX_QUESTIONS_PER_VISITOR} pertanyaan, batas maksimum untuk demo chatbot ini. Terima kasih sudah mencoba! Untuk melanjutkan obrolan, hubungi Fahri langsung: email ${CONTACT.email} atau LinkedIn linkedin.com/in/fahrizanuarpradian.`
     : `You have used all ${MAX_QUESTIONS_PER_VISITOR} questions, the maximum for this chatbot demo. Thanks for trying it! To continue the conversation, reach out to Fahri directly: email ${CONTACT.email} or LinkedIn linkedin.com/in/fahrizanuarpradian.`;
+}
+
+export function contactCta(lang: Lang): string {
+  return lang === "id"
+    ? `Mau lanjut ngobrol langsung? Email Fahri di ${CONTACT.email} atau hubungi lewat LinkedIn, dibalas langsung olehnya.`
+    : `Want to talk directly? Email Fahri at ${CONTACT.email} or reach him on LinkedIn, he replies himself.`;
 }
 
 export function dontKnowMessage(lang: Lang): string {
@@ -62,6 +69,7 @@ const PRIVATE_DATA_PATTERNS: RegExp[] = [
   /(home address|alamat rumah|nomor (hp|telepon|whatsapp)|phone number|whatsapp number)/i,
   /(tanggal lahir|date of birth|umur fahri|how old is fahri)/i,
   /(gaji|salary|penghasilan fahri)/i,
+  /\b(nik|ktp)\b|nomor induk kependudukan/i,
   /(password|kata sandi|credential|kredensial)/i,
 ];
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Linkedin, Mail, MessageCircle, Send, X } from "lucide-react";
+import { MessageCircle, Send, X } from "lucide-react";
 import {
   useEffect,
   useRef,
@@ -10,10 +10,8 @@ import {
 } from "react";
 
 import { useLanguage } from "@/components/layout/language";
-import { CONTACT } from "@/lib/chatbot-knowledge";
 import {
   MAX_QUESTIONS_PER_VISITOR,
-  limitMessage,
   type Lang,
 } from "@/lib/chatbot-guardrails";
 
@@ -31,6 +29,7 @@ const UI: Record<
     placeholder: string;
     send: string;
     remaining: (n: number) => string;
+    localModeNote: string;
     chips: string[];
     sourceGemini: string;
     sourceLocal: string;
@@ -45,10 +44,11 @@ const UI: Record<
     title: "Tanya Fahri",
     subtitle: "Chatbot demo, dijawab dari data portofolio ini",
     greeting:
-      "Halo! Aku asisten portofolio Fahri. Tanya aku soal layanan, proyek, keahlian, atau pengalaman Fahri. Kamu punya 5 pertanyaan untuk demo ini.",
+      "Halo! Aku asisten portofolio Fahri. Tanya aku soal layanan, proyek, keahlian, atau pengalaman Fahri.",
     placeholder: "Tulis pertanyaanmu...",
     send: "Kirim",
-    remaining: (n) => `Sisa pertanyaan: ${n}/${MAX_QUESTIONS_PER_VISITOR}`,
+    remaining: (n) => `Sisa pertanyaan AI: ${n}/${MAX_QUESTIONS_PER_VISITOR}`,
+    localModeNote: "Mode lokal",
     chips: [
       "Jasa apa saja yang ditawarkan Fahri?",
       "Bisa bikin chatbot atau RAG untuk bisnis saya?",
@@ -68,10 +68,11 @@ const UI: Record<
     title: "Ask Fahri",
     subtitle: "Demo chatbot, answered from this portfolio's data",
     greeting:
-      "Hi! I'm Fahri's portfolio assistant. Ask me about Fahri's services, projects, skills, or experience. You have 5 questions for this demo.",
+      "Hi! I'm Fahri's portfolio assistant. Ask me about Fahri's services, projects, skills, or experience.",
     placeholder: "Type your question...",
     send: "Send",
-    remaining: (n) => `Questions left: ${n}/${MAX_QUESTIONS_PER_VISITOR}`,
+    remaining: (n) => `AI questions left: ${n}/${MAX_QUESTIONS_PER_VISITOR}`,
+    localModeNote: "Local mode",
     chips: [
       "What services does Fahri offer?",
       "Can he build a chatbot or RAG for my business?",
@@ -333,11 +334,11 @@ export function PortfolioChat(): ReactNode {
     el.scrollTo({ top: el.scrollHeight });
   }, [messages, open, loading]);
 
-  const limitReached = remaining <= 0;
+  const geminiDone = remaining <= 0;
 
   async function send(text: string): Promise<void> {
     const cleaned = text.trim();
-    if (!cleaned || loading || limitReached) return;
+    if (!cleaned || loading) return;
     setInput("");
     const history = messages
       .filter((m) => m.text)
@@ -427,7 +428,7 @@ export function PortfolioChat(): ReactNode {
               </p>
               <p className="text-foreground/55 text-[11px] sm:text-[12px]">{ui.subtitle}</p>
               <p className="text-foreground/70 mt-1 text-[11px] font-medium sm:text-[12px]">
-                {ui.remaining(remaining)}
+                {geminiDone ? ui.localModeNote : ui.remaining(remaining)}
               </p>
             </div>
             <button
@@ -505,7 +506,7 @@ export function PortfolioChat(): ReactNode {
                 </div>
               </div>
             )}
-            {messages.length <= 1 && !limitReached && (
+            {messages.length <= 1 && (
               <div className="flex flex-wrap gap-2 pt-1">
                 {ui.chips.map((chip) => (
                   <button
@@ -521,53 +522,27 @@ export function PortfolioChat(): ReactNode {
             )}
           </div>
 
-          {limitReached ? (
-            <div className="border-foreground/8 border-t px-4 py-4">
-              <p className="text-foreground/70 mb-3 text-[13px] leading-relaxed">
-                {limitMessage(lang)}
-              </p>
-              <div className="flex gap-2">
-                <a
-                  href={`mailto:${CONTACT.email}`}
-                  className="focus-ring bg-foreground text-background inline-flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2 text-[13px] font-medium"
-                >
-                  <Mail className="h-4 w-4" aria-hidden="true" />
-                  {ui.email}
-                </a>
-                <a
-                  href={CONTACT.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="focus-ring border-foreground/15 text-foreground inline-flex flex-1 items-center justify-center gap-2 rounded-full border px-3 py-2 text-[13px] font-medium"
-                >
-                  <Linkedin className="h-4 w-4" aria-hidden="true" />
-                  {ui.linkedin}
-                </a>
-              </div>
-            </div>
-          ) : (
-            <form
-              onSubmit={onSubmit}
-              className="border-foreground/8 flex items-center gap-2 border-t px-3 py-3"
+          <form
+            onSubmit={onSubmit}
+            className="border-foreground/8 flex items-center gap-2 border-t px-3 py-3"
+          >
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={ui.placeholder}
+              maxLength={500}
+              aria-label={ui.placeholder}
+              className="border-foreground/12 text-foreground placeholder:text-foreground/40 focus:border-foreground/30 min-w-0 flex-1 rounded-full border bg-transparent px-3.5 py-2 text-[16px] outline-none sm:text-[14px]"
+            />
+            <button
+              type="submit"
+              disabled={loading || !input.trim()}
+              aria-label={ui.send}
+              className="focus-ring bg-foreground text-background inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-opacity disabled:opacity-35"
             >
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={ui.placeholder}
-                maxLength={500}
-                aria-label={ui.placeholder}
-                className="border-foreground/12 text-foreground placeholder:text-foreground/40 focus:border-foreground/30 min-w-0 flex-1 rounded-full border bg-transparent px-3.5 py-2 text-[16px] outline-none sm:text-[14px]"
-              />
-              <button
-                type="submit"
-                disabled={loading || !input.trim()}
-                aria-label={ui.send}
-                className="focus-ring bg-foreground text-background inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-opacity disabled:opacity-35"
-              >
-                <Send className="h-4 w-4" aria-hidden="true" />
-              </button>
-            </form>
-          )}
+              <Send className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </form>
         </div>
       )}
 
