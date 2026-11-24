@@ -11,11 +11,16 @@ reading claims about one.
   via `app/layout.tsx`). Bilingual ID/EN, follows the site language toggle.
 - API: `app/api/chat/route.ts` (Next.js route handler, runs on Vercel).
 - Brain, in order:
-  1. **Gemini 3.5 Flash** (`GEMINI_API_KEY`), grounded by a strict system
+  1. **Gemini 3.5 Flash**, grounded by a strict system
      instruction that contains only the knowledge below. The model is
      pinned in `app/api/chat/route.ts` and is not env-configurable.
-  2. **Local fallback**: if the key is missing, Gemini errors, times out
-     (12s), or is over quota, the route answers from the same knowledge
+     instruction. Three Vercel keys are tried in order
+     (`GEMINI_API_KEY_DOREMIANJAY` default, then
+     `GEMINI_API_KEY_ZANUARFAHRI`, then `GEMINI_API_KEY_FPRADIAN24`),
+     10 seconds per attempt; a timeout, error, or quota rejection
+     moves to the next key.
+  2. **Local fallback**: if every key is missing, errors, times out,
+     or is over quota, the route answers from the same knowledge
      base with retrieval (`retrieveLocal`): intent phrases on the raw
      question first (so "How can I contact Fahri?" returns Contact, not
      About), then keyword scoring where generic name tokens carry no
@@ -65,8 +70,9 @@ Upstash Redis keyed by the same visitor id / IP hash.
 ## Setup on Vercel
 
 1. Project Settings -> Environment Variables (Production + Preview):
-   - `GEMINI_API_KEY` = your Google AI Studio key (never commit it;
-     `.env*` is gitignored).
+   - `GEMINI_API_KEY_DOREMIANJAY` (default), `GEMINI_API_KEY_ZANUARFAHRI`
+     and `GEMINI_API_KEY_FPRADIAN24` (fallbacks) = Google AI Studio
+     keys (never commit them; `.env*` is gitignored).
    - No model variable: the engine is pinned in code to
      `gemini-3.5-flash`, so a `GEMINI_MODEL` value in Vercel (if one
      was ever set, it can be deleted) has no effect.

@@ -60,6 +60,8 @@ function hashIp(ip: string): string {
   return createHash("sha256").update(ip).digest("hex").slice(0, 16);
 }
 
+export const maxDuration = 60;
+
 type ChatTurn = { role: "user" | "model"; text: string };
 
 function sanitizeHistory(raw: unknown): ChatTurn[] {
@@ -96,18 +98,27 @@ const SYSTEM_INSTRUCTION = [
   knowledgeAsText(),
 ].join("\n");
 
-async function askGemini(
+// Gemini keys in priority order (Zanuar, 2026-11-24): doremianjay is
+// the default, zanuarfahri and fpradian24 are fallbacks. Each attempt
+// gets 10 seconds; a timeout, HTTP error, or quota rejection moves on
+// to the next key. If every key fails, askGemini returns null and the
+// route answers locally. Key values live only in Vercel environment
+// variables, never in code.
+const GEMINI_KEY_ENVS = [
+  "GEMINI_API_KEY_DOREMIANJAY",
+  "GEMINI_API_KEY_ZANUARFAHRI",
+  "GEMINI_API_KEY_FPRADIAN24",
+] as const;
+const GEMINI_TIMEOUT_MS = 10_000;
+
+async function askGeminiOnce(
+  apiKey: string,
+  model: string,
   message: string,
   history: ChatTurn[]
 ): Promise<string | null> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return null;
-  // Main engine, pinned (confirmed by Zanuar 2026-11-23): Gemini 3.5
-  // Flash. Deliberately NOT env-configurable, so a stray GEMINI_MODEL
-  // value in Vercel cannot silently switch the chatbot's engine.
-  const model = "gemini-3.5-flash";
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12_000);
+  const timeout = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
   try {
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
@@ -150,6 +161,23 @@ async function askGemini(
   } finally {
     clearTimeout(timeout);
   }
+}
+
+async function askGemini(
+  message: string,
+  history: ChatTurn[]
+): Promise<string | null> {
+  // Main engine, pinned (confirmed by Zanuar 2026-11-23): Gemini 3.5
+  // Flash. Deliberately NOT env-configurable, so a stray GEMINI_MODEL
+  // value in Vercel cannot silently switch the chatbot's engine.
+  const model = "gemini-3.5-flash";
+  for (const envName of GEMINI_KEY_ENVS) {
+    const apiKey = process.env[envName];
+    if (!apiKey) continue;
+    const answer = await askGeminiOnce(apiKey, model, message, history);
+    if (answer) return answer;
+  }
+  return null;
 }
 
 export async function POST(req: NextRequest) {
