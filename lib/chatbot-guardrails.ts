@@ -69,6 +69,7 @@ const PRIVATE_DATA_PATTERNS: RegExp[] = [
   /(home address|alamat rumah|nomor (hp|telepon|whatsapp)|phone number|whatsapp number)/i,
   /(tanggal lahir|date of birth|umur fahri|how old is fahri)/i,
   /(gaji|salary|penghasilan fahri)/i,
+  /\b(nik|ktp)\b|nomor induk kependudukan/i,
   /(password|kata sandi|credential|kredensial)/i,
 ];
 

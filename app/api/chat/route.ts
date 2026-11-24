@@ -138,7 +138,7 @@ async function askGeminiOnce(
             })),
             { role: "user", parts: [{ text: message }] },
           ],
-          generationConfig: { temperature: 0.2, maxOutputTokens: 400 },
+          generationConfig: { temperature: 0.2, maxOutputTokens: 900 },
         }),
       }
     );

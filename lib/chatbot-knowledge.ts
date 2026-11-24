@@ -260,7 +260,7 @@ export const KNOWLEDGE: KnowledgeSection[] = [
   {
     id: "location",
     keywords: [
-      "lokasi", "location", "di mana", "dimana", "where is he", "based",
+      "lokasi", "location", "orang mana", "asal mana", "where is he", "based",
       "remote", "jarak jauh", "timezone", "zona waktu", "bahasa",
       "language", "english", "domisili", "tinggal",
     ],
@@ -303,6 +303,18 @@ export const KNOWLEDGE: KnowledgeSection[] = [
       "Beberapa hal yang sering ditanyakan:\n1. CV atau resume: tidak ada file CV yang diunduh di situs ini; ringkasan pengalaman ada di halaman About dan LinkedIn Fahri, dan CV lengkap bisa diminta lewat email.\n2. Konsultasi atau meeting: belum ada kalender booking publik, atur saja lewat email atau LinkedIn, nanti waktunya dicocokkan.\n3. NDA dan kontrak: bisa dibicarakan dan disepakati sebelum proyek dimulai, silakan sampaikan kebutuhanmu di awal.\n4. Dukungan setelah serah terima: ruang revisi dan pendampingan awal bisa dimasukkan dalam kesepakatan awal, jadi tanyakan saat briefing.\nUntuk semuanya, jalur tercepat tetap email Fahri atau LinkedIn.",
     en_text:
       "A few things that are often asked:\n1. CV or resume: there is no downloadable CV file on this site; his experience summary is on the About page and Fahri's LinkedIn, and a full CV can be requested by email.\n2. Consultation or meeting: there is no public booking calendar yet, just arrange it by email or LinkedIn and a time will be matched.\n3. NDA and contract: these can be discussed and agreed before the project starts, just state your needs up front.\n4. Support after handover: revision room and initial guidance can be included in the initial agreement, so ask during the briefing.\nFor all of these, the fastest route is still Fahri's email or LinkedIn.",
+  },
+  {
+    id: "honest-gaps",
+    keywords: [
+      "gagal", "failed", "kelemahan", "weakness", "tantangan", "challenge",
+      "docker", "gcp", "ci/cd", "deployment", "deploy", "production",
+      "kekurangan",
+    ],
+    id_text:
+      "Beberapa hal memang tidak dirinci di portofolio ini, dan aku tidak mau mengarang soal itu:\n1. Proyek yang gagal atau tantangan tersulit: tidak dicantumkan, yang tampil di sini adalah proyek yang selesai dan dipublikasikan.\n2. Kelemahan atau area pengembangan: tidak dipublikasikan, itu bahan obrolan langsung saat interview.\n3. Detail infrastruktur seperti Docker, GCP, atau CI/CD: tidak disebutkan secara spesifik di situs ini.\nKalau kamu rekruter dan ingin menggali hal-hal itu, Fahri terbuka membahasnya secara jujur lewat email atau LinkedIn.",
+    en_text:
+      "A few things are genuinely not detailed in this portfolio, and I will not make them up:\n1. Failed projects or his hardest technical challenge: not listed, what is shown here are finished, published projects.\n2. Weaknesses or growth areas: not published, that is material for a direct interview conversation.\n3. Infrastructure specifics such as Docker, GCP, or CI/CD: not specified on this site.\nIf you are a recruiter and want to explore those, Fahri is open to discussing them honestly by email or LinkedIn.",
   },
   {
     id: "chatbot-tech",
@@ -451,6 +463,16 @@ const INTENT_PHRASES: { id: string; phrases: string[] }[] = [
     ],
   },
   {
+    id: "honest-gaps",
+    phrases: [
+      "proyek yang gagal", "proyek gagal", "failed project",
+      "tantangan tersulit", "tantangan teknis", "hardest challenge",
+      "kelemahan", "weakness", "kekurangan fahri", "docker", "gcp",
+      "ci/cd", "kubernetes", "mendeploy", "deployment",
+      "deploy ke production",
+    ],
+  },
+  {
     id: "chatbot-tech",
     phrases: [
       "chatbot ini", "this chatbot", "bot ini", "this bot",
@@ -515,6 +537,17 @@ const INTENT_PHRASES: { id: string; phrases: string[] }[] = [
     ],
   },
   {
+    id: "about",
+    phrases: [
+      "siapa fahri", "who is fahri", "tentang fahri", "about fahri",
+      "profil", "profile", "kenalan", "introduce", "background",
+      "siapa dia", "who is he", "ceritakan tentang", "tell me about",
+      "profil singkat", "rangkum profil", "ringkasan profil",
+      "pemilik portofolio", "portfolio owner", "summarize his profile",
+      "rangkum", "ringkas",
+    ],
+  },
+  {
     id: "projects",
     phrases: [
       "proyek", "project", "portfolio", "portofolio", "pernah bikin",
@@ -524,7 +557,7 @@ const INTENT_PHRASES: { id: string; phrases: string[] }[] = [
   {
     id: "skills",
     phrases: [
-      "skill", "keahlian", "expertise", "kemampuan", "tech stack",
+      "skill", "skil", "keahlian", "expertise", "kemampuan", "tech stack",
       "teknologi apa", "bahasa pemrograman", "react", "typescript",
       "javascript", "laravel", "flutter", "python", "next.js", "nextjs",
       "supabase", "tailwind", "tensorflow", "esp32", "php", "node",
@@ -563,14 +596,6 @@ const INTENT_PHRASES: { id: string; phrases: string[] }[] = [
     id: "services",
     phrases: ["jasa", "service", "layanan", "melayani", "freelance", "offer", "tawarkan"],
   },
-  {
-    id: "about",
-    phrases: [
-      "siapa fahri", "who is fahri", "tentang fahri", "about fahri",
-      "profil", "profile", "kenalan", "introduce", "background",
-      "siapa dia", "who is he", "ceritakan tentang", "tell me about",
-    ],
-  },
 ];
 
 /**
@@ -584,6 +609,14 @@ export function retrieveLocal(
   question: string,
 ): { section: KnowledgeSection; score: number } | null {
   const raw = question.toLowerCase();
+  // Requests for general services (debugging the visitor's own code,
+  // recipes, and the like) are out of scope even when they mention a
+  // technology Fahri knows; they must not be routed to a section.
+  const OFFTOPIC_REQUESTS = [
+    "debug kode", "debug code", "fix my code", "perbaiki kode saya",
+    "buatkan resep", "resep nasi", "resep masakan", "recipe for",
+  ];
+  if (OFFTOPIC_REQUESTS.some((p) => raw.includes(p))) return null;
   for (const intent of INTENT_PHRASES) {
     if (intent.phrases.some((p) => raw.includes(p))) {
       const section = KNOWLEDGE.find((s) => s.id === intent.id);

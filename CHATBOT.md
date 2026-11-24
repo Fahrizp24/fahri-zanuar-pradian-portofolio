@@ -56,7 +56,7 @@ reading claims about one.
 4. **Private data is refused**: only the public contact details already
    on this site may be shared.
 5. **Caps everywhere**: message 500 chars, history 4 turns, answer
-   1,200 chars, model temperature 0.2, max output 400 tokens. Model
+   1,200 chars, model temperature 0.2, max output 900 tokens. Model
    output is screened for credential-shaped strings before it is shown.
 
 ### Honest limit of the limit
