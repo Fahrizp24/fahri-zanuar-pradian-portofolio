@@ -8,6 +8,7 @@ import {
   MAX_QUESTIONS_PER_VISITOR,
   checkMessage,
   checkOutput,
+  contactCta,
   detectLang,
   dontKnowMessage,
   limitMessage,
@@ -179,18 +180,21 @@ export async function POST(req: NextRequest) {
   const visitorKey = `v:${vid}`;
   const ipKey = `ip:${hashIp(clientIp(req))}`;
 
-  // The 5-question limit is per visitor. The IP counter is only a loose
-  // anti-abuse ceiling (shared offices/NAT share one IP), set far higher.
+  // The 5-question Gemini quota is per visitor. The IP counter is only
+  // a loose anti-abuse ceiling (shared offices/NAT share one IP), set
+  // far higher, and it is the only hard stop left.
   const IP_ABUSE_CEILING = MAX_QUESTIONS_PER_VISITOR * 10;
   const used = peek(visitorKey);
-  if (used >= MAX_QUESTIONS_PER_VISITOR || peek(ipKey) >= IP_ABUSE_CEILING) {
+  if (peek(ipKey) >= IP_ABUSE_CEILING) {
     return NextResponse.json({
       answer: limitMessage(answerLang),
       source: "limit",
       remaining: 0,
-      limitReached: true,
     });
   }
+  // Past the Gemini quota the chat does not stop: it continues in local
+  // mode, answered from the knowledge base (Zanuar, 2026-11-24).
+  const localOnly = used >= MAX_QUESTIONS_PER_VISITOR;
 
   const verdict = checkMessage(message);
   if (
@@ -210,7 +214,6 @@ export async function POST(req: NextRequest) {
   const newCount = bump(visitorKey);
   bump(ipKey);
   const remaining = Math.max(0, MAX_QUESTIONS_PER_VISITOR - newCount);
-  const limitReached = remaining === 0;
 
   if (!verdict.ok) {
     const reason =
@@ -219,24 +222,25 @@ export async function POST(req: NextRequest) {
       answer: refusalFor(reason, answerLang),
       source: "guardrail",
       remaining,
-      limitReached,
     });
   }
 
   const cleaned = sanitize(message);
   const turns = sanitizeHistory(history);
 
-  const geminiAnswer = await askGemini(cleaned, turns);
+  const geminiAnswer = localOnly ? null : await askGemini(cleaned, turns);
   if (geminiAnswer) {
     return NextResponse.json({
       answer: geminiAnswer,
       source: "gemini",
       remaining,
-      limitReached,
     });
   }
 
-  // Local fallback: Gemini key missing, quota error, timeout, or outage.
+  // Local answers: Gemini key missing, quota error, timeout, outage,
+  // or the visitor is past the Gemini quota (localOnly). Knowledge
+  // answers end with a short contact line; the dont-know message
+  // already ends with its own reach-out line.
   // A short "thinking" pause so local answers do not appear instantly
   // and feel robotic next to Gemini answers: the widget shows an
   // animated three-dot typing indicator while it waits.
@@ -246,16 +250,14 @@ export async function POST(req: NextRequest) {
   const hit = retrieveLocal(cleaned);
   if (hit) {
     return NextResponse.json({
-      answer: answerLang === "id" ? hit.section.id_text : hit.section.en_text,
+      answer: `${answerLang === "id" ? hit.section.id_text : hit.section.en_text}\n\n${contactCta(answerLang)}`,
       source: "local",
       remaining,
-      limitReached,
     });
   }
   return NextResponse.json({
     answer: dontKnowMessage(answerLang),
     source: "local",
     remaining,
-    limitReached,
   });
 }
