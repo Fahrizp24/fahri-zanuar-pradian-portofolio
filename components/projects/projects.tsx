@@ -6,11 +6,14 @@ import {
   Compass,
   Layers,
   LineChart,
+  MessagesSquare,
   ShieldCheck,
   Sparkles,
+  Sprout,
+  Stethoscope,
   Wand2,
 } from "lucide-react";
-import type { ComponentType, ReactNode } from "react";
+import { useState, type ComponentType, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -23,9 +26,11 @@ import { useLanguage } from "@/components/layout/language";
  * Replace these with your own work before shipping.
  */
 
+type Topic = "llm" | "web" | "cv" | "iot";
+
 type Project = {
   id: string;
-  category: "ai" | "website";
+  topics: Topic[];
   icon: ComponentType<{ className?: string }>;
   iconLabel: string;
   title: string;
@@ -42,7 +47,7 @@ type Project = {
 const PROJECTS: Project[] = [
   {
     id: "word-to-form",
-    category: "ai",
+    topics: ["llm"],
     icon: Sparkles,
     iconLabel: "AI Form",
     title: "AI Word to Google Form Converter",
@@ -55,8 +60,50 @@ const PROJECTS: Project[] = [
     hrefLabel: "Open web app",
   },
   {
+    id: "playitplus",
+    topics: ["llm"],
+    icon: Stethoscope,
+    iconLabel: "VeriScribe",
+    title: "PlayItPlus (VeriScribe) — AI Clinical Documentation Assistant",
+    description: "Konsultasi ditranskrip dengan speech-to-text, data pribadi dideidentifikasi, lalu LLM menyusun draf catatan SOAP untuk diverifikasi dokter beserta ringkasan untuk pasien.",
+    meta: "LLM, Speech-to-Text, Next.js",
+    imageRatio: 1852 / 850,
+    image: "/images/projects/playitplus-screenshot.webp",
+    imageAlt: "VeriScribe clinical documentation assistant",
+    href: "https://playitplus.vercel.app",
+    hrefLabel: "Open web app",
+  },
+  {
+    id: "sikluspangan",
+    topics: ["llm", "web"],
+    icon: Sprout,
+    iconLabel: "SiklusPangan",
+    title: "SiklusPangan",
+    description: "Platform zero organic waste: Gemini VLM menilai kondisi makanan dari foto untuk mengarahkan surplus yang masih layak ke penerima dan yang sudah basi ke pengolahan.",
+    meta: "Next.js, Supabase, Gemini VLM",
+    imageRatio: 16 / 10,
+    image: "/images/projects/sikluspangan-collage.webp",
+    imageAlt: "SiklusPangan zero organic waste platform",
+    href: "https://siklus-pangan.vercel.app",
+    hrefLabel: "Open web app",
+  },
+  {
+    id: "hermes",
+    topics: ["llm"],
+    icon: MessagesSquare,
+    iconLabel: "Hermes RAG",
+    title: "Hermes Chatbot with RAG",
+    description: "Chatbot RAG open source: unggah PDF, dokumen dipecah dan di-embed ke FAISS, lalu dijawab LLM dengan fallback berlapis.",
+    meta: "Next.js, FastAPI, LlamaIndex, FAISS",
+    imageRatio: 16 / 10,
+    image: "/images/projects/hermes-cover.webp",
+    imageAlt: "Hermes Chatbot with RAG",
+    href: "https://github.com/Fahrizp24/hermes-chatbot-with-rag",
+    hrefLabel: "View project",
+  },
+  {
     id: "safeband",
-    category: "website",
+    topics: ["iot"],
     icon: Bot,
     iconLabel: "SafeBand",
     title: "SafeBand",
@@ -70,7 +117,7 @@ const PROJECTS: Project[] = [
   },
   {
     id: "prestasi",
-    category: "website",
+    topics: ["web"],
     icon: LineChart,
     iconLabel: "Prestasi",
     title: "Sistem Pencatatan Prestasi Mahasiswa JTI Polinema",
@@ -83,36 +130,8 @@ const PROJECTS: Project[] = [
     hrefLabel: "View project",
   },
   {
-    id: "fasilitas",
-    category: "website",
-    icon: Layers,
-    iconLabel: "Campus Facilities",
-    title: "Sistem Pelaporan dan Perbaikan Fasilitas Kampus",
-    description: "Platform pelaporan fasilitas dengan pengelolaan status perbaikan yang lebih terstruktur.",
-    meta: "Laravel, MySQL, Bootstrap",
-    imageRatio: 1200 / 644,
-    image: "/images/projects/fxit.webp",
-    imageAlt: "Campus facilities dashboard",
-    href: "https://github.com/Fahrizp24/Sistem-Manajemen-Pelaporan-dan-Perbaikan-Fasilitas-Kampus",
-    hrefLabel: "View project",
-  },
-  {
-    id: "catatdong",
-    category: "website",
-    icon: Layers,
-    iconLabel: "Website Project",
-    title: "CatatDong",
-    description: "Aplikasi pencatat pengeluaran harian dengan kalkulator jatah jajan bulanan.",
-    meta: "Next.js, React, Zustand, Tailwind CSS",
-    imageRatio: 1440 / 1000,
-    image: "/images/projects/CatatDong UI Showcase.png",
-    imageAlt: "CatatDong UI showcase",
-    href: "https://catat-dong.vercel.app/",
-    hrefLabel: "Open web app",
-  },
-  {
     id: "safeform",
-    category: "website",
+    topics: ["web"],
     icon: ShieldCheck,
     iconLabel: "Exam Security",
     title: "SafeForm — Google Form Anti-Cheating Gateway",
@@ -125,8 +144,36 @@ const PROJECTS: Project[] = [
     hrefLabel: "View project",
   },
   {
+    id: "catatdong",
+    topics: ["web"],
+    icon: Layers,
+    iconLabel: "Website Project",
+    title: "CatatDong",
+    description: "Aplikasi pencatat pengeluaran harian dengan kalkulator jatah jajan bulanan.",
+    meta: "Next.js, React, Zustand, Tailwind CSS",
+    imageRatio: 1440 / 1000,
+    image: "/images/projects/CatatDong UI Showcase.png",
+    imageAlt: "CatatDong UI showcase",
+    href: "https://catat-dong.vercel.app/",
+    hrefLabel: "Open web app",
+  },
+  {
+    id: "fasilitas",
+    topics: ["web"],
+    icon: Layers,
+    iconLabel: "Campus Facilities",
+    title: "Sistem Pelaporan dan Perbaikan Fasilitas Kampus",
+    description: "Platform pelaporan fasilitas dengan pengelolaan status perbaikan yang lebih terstruktur.",
+    meta: "Laravel, MySQL, Bootstrap",
+    imageRatio: 1200 / 644,
+    image: "/images/projects/fxit.webp",
+    imageAlt: "Campus facilities dashboard",
+    href: "https://github.com/Fahrizp24/Sistem-Manajemen-Pelaporan-dan-Perbaikan-Fasilitas-Kampus",
+    hrefLabel: "View project",
+  },
+  {
     id: "vision-vehicle-detection",
-    category: "ai",
+    topics: ["cv"],
     icon: Compass,
     iconLabel: "Computer Vision",
     title: "Computer Vision: Vehicle Detection",
@@ -140,7 +187,7 @@ const PROJECTS: Project[] = [
   },
   {
     id: "emotion-ai",
-    category: "ai",
+    topics: ["cv"],
     icon: Wand2,
     iconLabel: "Emotion AI",
     title: "Emotion AI: Deteksi Ekspresi Wajah Real-Time",
@@ -155,6 +202,14 @@ const PROJECTS: Project[] = [
   },
 ];
 
+const TOPIC_FILTERS: { id: Topic | "all"; labelKey: string }[] = [
+  { id: "all", labelKey: "filterAll" },
+  { id: "llm", labelKey: "filterLlm" },
+  { id: "web", labelKey: "filterWeb" },
+  { id: "cv", labelKey: "filterCv" },
+  { id: "iot", labelKey: "filterIot" },
+];
+
 export type ProjectsProps = {
   withHeadline?: boolean;
   viewMoreVisible?: boolean;
@@ -165,7 +220,12 @@ export function Projects({
   viewMoreVisible = false,
 }: ProjectsProps): ReactNode {
   const { t } = useLanguage();
-  const items = viewMoreVisible ? PROJECTS.slice(0, 4) : PROJECTS;
+  const [topic, setTopic] = useState<Topic | "all">("all");
+  const items = viewMoreVisible
+    ? PROJECTS.slice(0, 4)
+    : topic === "all"
+      ? PROJECTS
+      : PROJECTS.filter((project) => project.topics.includes(topic));
 
   return (
     <section className="relative w-full">
@@ -181,23 +241,35 @@ export function Projects({
           </FadeIn>
         ) : null}
 
-        {[
-          { id: ["website", "ai"], title: t("projects") }
-        ].map((group) => {
-          const groupItems = items.filter((project) => group.id.includes(project.category));
-          return (
-            <div key={group.id.join("-")} className="mb-16 last:mb-0">
-              <h2 className="mb-6 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                {group.title}
-              </h2>
-              <div className="columns-1 gap-6 md:columns-2 md:gap-7">
-                {groupItems.map((project, index) => (
-                  <ProjectCard key={project.id} project={project} index={index} t={t} />
-                ))}
-              </div>
+        <div className="mb-16 last:mb-0">
+          <h2 className="mb-6 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            {t("projects")}
+          </h2>
+          {!viewMoreVisible ? (
+            <div className="mb-8 flex flex-wrap gap-2" role="group" aria-label={t("projects")}>
+              {TOPIC_FILTERS.map((filter) => (
+                <button
+                  key={filter.id}
+                  type="button"
+                  aria-pressed={topic === filter.id}
+                  onClick={() => setTopic(filter.id)}
+                  className={`focus-ring h-9 cursor-pointer rounded-full px-4 text-[13px] font-medium tracking-tight transition-colors ${
+                    topic === filter.id
+                      ? "bg-foreground text-background"
+                      : "bg-background text-foreground/60 ring-1 ring-foreground/10 hover:text-foreground"
+                  }`}
+                >
+                  {t(filter.labelKey)}
+                </button>
+              ))}
             </div>
-          );
-        })}
+          ) : null}
+          <div className="columns-1 gap-6 md:columns-2 md:gap-7">
+            {items.map((project, index) => (
+              <ProjectCard key={project.id} project={project} index={index} t={t} />
+            ))}
+          </div>
+        </div>
 
         {viewMoreVisible ? (
           <div className="mt-12 flex justify-center sm:mt-16">
@@ -228,7 +300,7 @@ function ProjectCard({
   t: (id: string) => string;
 }): ReactNode {
   const Icon = project.icon;
-  const copyKey = project.id === "word-to-form" ? "Word" : project.id === "safeband" ? "Safe" : project.id === "fasilitas" ? "Fixit" : project.id === "safeform" ? "SafeForm" : project.id === "prestasi" ? "Prestasi" : project.id === "vision-vehicle-detection" ? "Vision" : project.id === "catatdong" ? "CatatDong" : "Emotion";
+  const copyKey = project.id === "word-to-form" ? "Word" : project.id === "playitplus" ? "PlayItPlus" : project.id === "sikluspangan" ? "SiklusPangan" : project.id === "hermes" ? "Hermes" : project.id === "safeband" ? "Safe" : project.id === "fasilitas" ? "Fixit" : project.id === "safeform" ? "SafeForm" : project.id === "prestasi" ? "Prestasi" : project.id === "vision-vehicle-detection" ? "Vision" : project.id === "catatdong" ? "CatatDong" : "Emotion";
   const actionLabel = project.hrefLabel === "Open Colab" ? t("openColab") : project.hrefLabel === "Open web app" ? t("openWeb") : t("viewProject");
   return (
     <FadeIn
