@@ -11,6 +11,13 @@ reading claims about one.
   via `app/layout.tsx`). Bilingual ID/EN, follows the site language toggle.
 - API: `app/api/chat/route.ts` (Next.js route handler, runs on Vercel).
 - Brain, in order:
+  0. **Small talk templates**: greetings, thanks, goodbyes, "who are
+     you", "what can you do", test pings, and bare acknowledgements
+     are answered from canned texts in `lib/chatbot-guardrails.ts`
+     (`smalltalkFor`). No AI engine is called and the 5-question AI
+     quota is not consumed. Matching is strict: the whole normalized
+     message (max 40 chars) must match a pattern, so a real question
+     that starts with "hi" still goes to the engines.
   1. **Sumopod (hy4-flash)** — the default engine since 2026-11-25.
      OpenAI-compatible chat completions at
      `https://ai.sumopod.com/v1`, key from the `SUMOPOD_API_KEY`
@@ -55,14 +62,16 @@ reading claims about one.
    on, the route answers locally and the chat never stops. Every local
    knowledge answer ends with a short contact line (email / LinkedIn),
    and every refusal tells the visitor to reach out to Fahri directly.
-2. **Grounded answers only.** Questions outside the knowledge base get a
+2. **Small talk never reaches the AI.** See step 0 above; a "hi"
+   costs no quota and is answered instantly from a template.
+3. **Grounded answers only.** Questions outside the knowledge base get a
    "not in my data" refusal + reach-out message, never an invented answer.
-3. **Injection / jailbreak patterns are refused** (ignore-instructions,
+4. **Injection / jailbreak patterns are refused** (ignore-instructions,
    reveal-system-prompt, API key requests, DAN/developer mode, etc.) in
    English and Indonesian. Refused probing attempts still consume quota.
-4. **Private data is refused**: only the public contact details already
+5. **Private data is refused**: only the public contact details already
    on this site may be shared.
-5. **Caps everywhere**: message 500 chars, history 4 turns, answer
+6. **Caps everywhere**: message 500 chars, history 4 turns, answer
    1,200 chars, model temperature 0.2, max output 900 tokens. Model
    output is screened for credential-shaped strings before it is shown.
 

@@ -14,6 +14,7 @@ import {
   limitMessage,
   refusalFor,
   sanitize,
+  smalltalkFor,
   type Lang,
 } from "@/lib/chatbot-guardrails";
 import { knowledgeAsText, retrieveLocal } from "@/lib/chatbot-knowledge";
@@ -295,6 +296,21 @@ export async function POST(req: NextRequest) {
       },
       { status: 400 }
     );
+  }
+
+  // Small talk (greetings, thanks, goodbyes, test pings, bare
+  // acknowledgements) is answered from canned templates: no AI
+  // engine is called and the AI quota is NOT consumed (Zanuar,
+  // 2026-11-25). Only messages that passed the guardrails get here.
+  if (verdict.ok) {
+    const smalltalk = smalltalkFor(message, answerLang);
+    if (smalltalk) {
+      return NextResponse.json({
+        answer: smalltalk,
+        source: "local",
+        remaining: Math.max(0, MAX_QUESTIONS_PER_VISITOR - used),
+      });
+    }
   }
 
   // Accepted questions AND refused probing attempts both consume quota.
