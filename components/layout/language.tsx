@@ -122,7 +122,7 @@ export function LanguageToggle(): ReactNode {
           type="button"
           aria-pressed={language === item}
           onClick={() => setLanguage(item)}
-          className={`focus-ring h-9 min-w-9 rounded-full px-2.5 text-[12px] font-semibold uppercase tracking-tight transition-colors ${language === item ? "bg-foreground text-background" : "bg-background text-foreground/50 ring-1 ring-foreground/8 hover:text-foreground"}`}
+          className={`focus-ring h-9 min-w-9 rounded-full px-2.5 text-[12px] font-semibold uppercase tracking-tight transition-colors ${language === item ? "bg-foreground text-background" : "bg-background text-foreground/70 ring-1 ring-foreground/10 hover:text-foreground"}`}
         >
           {item}
         </button>

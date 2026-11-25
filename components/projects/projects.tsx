@@ -239,7 +239,6 @@ function ProjectCard({
         href={project.href}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`${actionLabel}: ${t(`project${copyKey}Title`)}`}
         className="project-card block rounded-3xl focus-ring"
       >
         <article className="flex cursor-pointer flex-col gap-4 rounded-3xl border border-foreground/8 bg-background p-3 transition-colors hover:border-foreground/20 sm:p-3.5">
@@ -282,10 +281,10 @@ function ProjectCard({
           </div>
 
           <div className="flex items-center justify-between gap-3 px-1 pb-2">
-            <p className="text-[12px] tracking-tight text-foreground/50">
+            <p className="text-[12px] tracking-tight text-foreground/65">
               {project.meta}
             </p>
-            <span className="shrink-0 text-[12px] font-medium tracking-tight text-foreground/60">
+            <span className="shrink-0 text-[12px] font-medium tracking-tight text-foreground/75">
               {actionLabel}
             </span>
           </div>

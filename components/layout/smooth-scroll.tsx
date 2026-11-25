@@ -25,17 +25,19 @@ export function SmoothScroll({
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
+    const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
 
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion || isCoarsePointer) return;
 
     const lenis = new Lenis(LENIS_OPTIONS);
 
+    let rafId = 0;
     function raf(time: number): void {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
 
-    const rafId = requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     function handleAnchorClick(e: MouseEvent): void {
       const target = e.target as HTMLElement;

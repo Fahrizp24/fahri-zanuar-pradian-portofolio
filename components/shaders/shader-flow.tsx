@@ -138,126 +138,147 @@ export function ShaderFlow(props: ShaderFlowProps): ReactNode {
     const el = ref.current;
     if (!el) return;
 
-    const r = new Renderer({
-      dpr: Math.min(window.devicePixelRatio || 1, 1),
-      alpha: false,
-      antialias: false,
-      powerPreference: "high-performance",
-    });
-    const gl = r.gl;
-    gl.canvas.style.width = "100%";
-    gl.canvas.style.height = "100%";
-    gl.canvas.style.display = "block";
-    el.appendChild(gl.canvas);
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    if (prefersReducedMotion || isCoarsePointer) return;
 
-    const geo = new Triangle(gl);
-    const p = new Program(gl, {
-      vertex: VS,
-      fragment: FS,
-      uniforms: {
-        uT: { value: 0 },
-        uR: { value: [1, 1] },
-        uV: { value: [...D.flowSpeed] },
-        uS: { value: D.scale },
-        uTw: { value: 50 },
-        uDe: { value: 200 },
-        uMs: { value: 2.5 },
-        uB: { value: D.brightness },
-        uIt: { value: D.iterations },
-        uColorLow: { value: [...D.colorLowA] },
-        uColorHigh: { value: [...D.colorHighA] },
-        uBgColor: { value: readBgColor(document.documentElement) },
-        uFadeShape: {
-          value: [D.fadeCx, D.fadeCy, D.fadeRx, D.fadeRy],
-        },
-      },
-    });
+    let cancelled = false;
+    let cleanup: (() => void) | undefined;
 
-    if (!p.uniformLocations) {
-      console.error("Shader link failed", {
-        v: gl.getShaderInfoLog(p.vertexShader),
-        f: gl.getShaderInfoLog(p.fragmentShader),
+    const startTimer = window.setTimeout(() => {
+      if (cancelled) return;
+
+      const r = new Renderer({
+        dpr: 0.75,
+        alpha: false,
+        antialias: false,
+        powerPreference: "low-power",
       });
-      return;
-    }
+      const gl = r.gl;
+      gl.canvas.style.width = "100%";
+      gl.canvas.style.height = "100%";
+      gl.canvas.style.display = "block";
+      el.appendChild(gl.canvas);
 
-    const mesh = new Mesh(gl, { geometry: geo, program: p });
-    const scene = new Transform();
-    mesh.setParent(scene);
+      const geo = new Triangle(gl);
+      const p = new Program(gl, {
+        vertex: VS,
+        fragment: FS,
+        uniforms: {
+          uT: { value: 0 },
+          uR: { value: [1, 1] },
+          uV: { value: [...D.flowSpeed] },
+          uS: { value: D.scale },
+          uTw: { value: 50 },
+          uDe: { value: 200 },
+          uMs: { value: 2.5 },
+          uB: { value: D.brightness },
+          uIt: { value: D.iterations },
+          uColorLow: { value: [...D.colorLowA] },
+          uColorHigh: { value: [...D.colorHighA] },
+          uBgColor: { value: readBgColor(document.documentElement) },
+          uFadeShape: {
+            value: [D.fadeCx, D.fadeCy, D.fadeRx, D.fadeRy],
+          },
+        },
+      });
 
-    const onResize = (): void => {
-      const w = el.clientWidth;
-      const h = el.clientHeight;
-      r.setSize(w, h);
-      p.uniforms.uR.value = [gl.drawingBufferWidth, gl.drawingBufferHeight];
-    };
-
-    onResize();
-    const ro = new ResizeObserver(onResize);
-    ro.observe(el);
-
-    let raf = 0;
-    let visible = true;
-    let onScreen = true;
-    const t0 = performance.now();
-
-    const onVisibility = (): void => {
-      visible = document.visibilityState === "visible";
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) onScreen = e.isIntersecting;
-      },
-      { rootMargin: "100px" }
-    );
-    io.observe(el);
-
-    const syncBg = (): void => {
-      p.uniforms.uBgColor.value = readBgColor(document.documentElement);
-    };
-    const themeObserver = new MutationObserver(syncBg);
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class", "data-theme", "style"],
-    });
-    syncBg();
-
-    const sync = (): void => {
-      const c = pr.current;
-      p.uniforms.uV.value = [...(c.flowSpeed ?? D.flowSpeed)];
-      p.uniforms.uS.value = c.scale ?? D.scale;
-      p.uniforms.uB.value = c.brightness ?? D.brightness;
-      p.uniforms.uIt.value = c.iterations ?? D.iterations;
-      p.uniforms.uColorLow.value = [...(c.colorLowA ?? D.colorLowA)];
-      p.uniforms.uColorHigh.value = [...(c.colorHighA ?? D.colorHighA)];
-      p.uniforms.uFadeShape.value = [
-        c.fadeCx ?? D.fadeCx,
-        c.fadeCy ?? D.fadeCy,
-        c.fadeRx ?? D.fadeRx,
-        c.fadeRy ?? D.fadeRy,
-      ];
-    };
-
-    const tick = (): void => {
-      if (visible && onScreen) {
-        p.uniforms.uT.value = (performance.now() - t0) / 1000;
-        sync();
-        r.render({ scene });
+      if (!p.uniformLocations) {
+        console.error("Shader link failed", {
+          v: gl.getShaderInfoLog(p.vertexShader),
+          f: gl.getShaderInfoLog(p.fragmentShader),
+        });
+        return;
       }
+
+      const mesh = new Mesh(gl, { geometry: geo, program: p });
+      const scene = new Transform();
+      mesh.setParent(scene);
+
+      const onResize = (): void => {
+        const w = el.clientWidth;
+        const h = el.clientHeight;
+        r.setSize(w, h);
+        p.uniforms.uR.value = [gl.drawingBufferWidth, gl.drawingBufferHeight];
+      };
+
+      onResize();
+      const ro = new ResizeObserver(onResize);
+      ro.observe(el);
+
+      let raf = 0;
+      let visible = true;
+      let onScreen = true;
+      let lastFrame = 0;
+      const t0 = performance.now();
+
+      const onVisibility = (): void => {
+        visible = document.visibilityState === "visible";
+      };
+      document.addEventListener("visibilitychange", onVisibility);
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) onScreen = e.isIntersecting;
+        },
+        { rootMargin: "100px" }
+      );
+      io.observe(el);
+
+      const syncBg = (): void => {
+        p.uniforms.uBgColor.value = readBgColor(document.documentElement);
+      };
+      const themeObserver = new MutationObserver(syncBg);
+      themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class", "data-theme", "style"],
+      });
+      syncBg();
+
+      const sync = (): void => {
+        const c = pr.current;
+        p.uniforms.uV.value = [...(c.flowSpeed ?? D.flowSpeed)];
+        p.uniforms.uS.value = c.scale ?? D.scale;
+        p.uniforms.uB.value = c.brightness ?? D.brightness;
+        p.uniforms.uIt.value = c.iterations ?? D.iterations;
+        p.uniforms.uColorLow.value = [...(c.colorLowA ?? D.colorLowA)];
+        p.uniforms.uColorHigh.value = [...(c.colorHighA ?? D.colorHighA)];
+        p.uniforms.uFadeShape.value = [
+          c.fadeCx ?? D.fadeCx,
+          c.fadeCy ?? D.fadeCy,
+          c.fadeRx ?? D.fadeRx,
+          c.fadeRy ?? D.fadeRy,
+        ];
+      };
+
+      const tick = (now: number): void => {
+        if (visible && onScreen && now - lastFrame >= 33) {
+          lastFrame = now;
+          p.uniforms.uT.value = (now - t0) / 1000;
+          sync();
+          r.render({ scene });
+        }
+        raf = requestAnimationFrame(tick);
+      };
       raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
+
+      cleanup = () => {
+        cancelAnimationFrame(raf);
+        ro.disconnect();
+        io.disconnect();
+        themeObserver.disconnect();
+        document.removeEventListener("visibilitychange", onVisibility);
+        if (gl.canvas.parentElement === el) el.removeChild(gl.canvas);
+        gl.getExtension("WEBGL_lose_context")?.loseContext();
+      };
+    }, 300);
 
     return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-      io.disconnect();
-      themeObserver.disconnect();
-      document.removeEventListener("visibilitychange", onVisibility);
-      if (gl.canvas.parentElement === el) el.removeChild(gl.canvas);
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      cancelled = true;
+      window.clearTimeout(startTimer);
+      cleanup?.();
     };
   }, []);
 

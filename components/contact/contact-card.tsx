@@ -68,7 +68,7 @@ export function ContactCard(): ReactNode {
                   <p className="text-[13px] tracking-tight text-foreground/70">
                     2026 &copy; Fahri Zanuar Pradian
                   </p>
-                  <p className="text-[12px] tracking-tight text-foreground/45">
+                  <p className="text-[12px] tracking-tight text-foreground/65">
                     {t("builtWith")}
                   </p>
                 </div>
