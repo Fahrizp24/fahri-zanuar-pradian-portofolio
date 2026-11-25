@@ -104,9 +104,9 @@ export const KNOWLEDGE: KnowledgeSection[] = [
       "karya", "work", "built", "aplikasi apa",
     ],
     id_text:
-      "Ini beberapa proyek Fahri, campur web, AI, dan IoT:\n1. AI Word to Google Form Converter, mengubah DOCX menjadi Google Form otomatis dengan Gemini AI (Next.js).\n2. SafeBand, teknologi wearable IoT untuk keamanan pengguna (ESP32).\n3. SafeForm, gateway anti-kecurangan Google Form dengan fullscreen lock dan deteksi pelanggaran real-time.\n4. Sistem Pencatatan Prestasi Mahasiswa JTI Polinema (Laravel).\n5. Sistem Pelaporan dan Perbaikan Fasilitas Kampus (Laravel).\n6. CatatDong, aplikasi pencatat pengeluaran (Next.js).\n7. Computer Vision: Vehicle Detection, deteksi kendaraan dengan Python dan YOLOv8.\n8. Emotion AI, deteksi ekspresi wajah real-time dengan TensorFlow dan CNN.\nDetail tiap proyek ada di halaman Projects situs ini, silakan cek langsung di sana. Kamu juga bisa tanya aku soal proyek tertentu, sebutkan saja namanya.",
+      "Ini beberapa proyek Fahri, campur web, AI, dan IoT:\n1. AI Word to Google Form Converter, mengubah DOCX menjadi Google Form otomatis dengan Gemini AI (Next.js).\n2. PlayItPlus (VeriScribe), asisten dokumentasi klinis AI dengan speech-to-text dan LLM (proyek lomba PLAY IT Hackathon DeepTech 2026).\n3. SiklusPangan, platform zero organic waste dengan Gemini VLM yang menilai kondisi makanan dari foto (Next.js, Supabase).\n4. Hermes Chatbot with RAG, chatbot dokumen open source (FastAPI, LlamaIndex, FAISS).\n5. SafeBand, teknologi wearable IoT untuk keamanan pengguna (ESP32).\n6. SafeForm, gateway anti-kecurangan Google Form dengan fullscreen lock dan deteksi pelanggaran real-time.\n7. Sistem Pencatatan Prestasi Mahasiswa JTI Polinema (Laravel).\n8. Sistem Pelaporan dan Perbaikan Fasilitas Kampus (Laravel).\n9. CatatDong, aplikasi pencatat pengeluaran (Next.js).\n10. Computer Vision: Vehicle Detection, deteksi kendaraan dengan Python dan YOLOv8.\n11. Emotion AI, deteksi ekspresi wajah real-time dengan TensorFlow dan CNN.\nDetail tiap proyek ada di halaman Projects situs ini, silakan cek langsung di sana. Kamu juga bisa tanya aku soal proyek tertentu, sebutkan saja namanya.",
     en_text:
-      "Here are some of Fahri's projects, a mix of web, AI, and IoT:\n1. AI Word to Google Form Converter, which turns DOCX files into Google Forms automatically with Gemini AI (Next.js).\n2. SafeBand, IoT wearable technology for user safety (ESP32).\n3. SafeForm, a Google Form anti-cheating gateway with fullscreen lock and real-time violation detection.\n4. JTI Polinema Student Achievement Management System (Laravel).\n5. Campus Facility Reporting and Maintenance System (Laravel).\n6. CatatDong, an expense tracker app (Next.js).\n7. Computer Vision: Vehicle Detection, using Python and YOLOv8.\n8. Emotion AI, real-time facial expression detection with TensorFlow and CNN.\nDetails for each project are on this site's Projects page, feel free to check them there. You can also ask me about a specific project, just name it.",
+      "Here are some of Fahri's projects, a mix of web, AI, and IoT:\n1. AI Word to Google Form Converter, which turns DOCX files into Google Forms automatically with Gemini AI (Next.js).\n2. PlayItPlus (VeriScribe), an AI clinical documentation assistant using speech-to-text and an LLM (a PLAY IT Hackathon DeepTech 2026 competition project).\n3. SiklusPangan, a zero organic waste platform with a Gemini VLM that assesses food condition from photos (Next.js, Supabase).\n4. Hermes Chatbot with RAG, an open-source document chatbot (FastAPI, LlamaIndex, FAISS).\n5. SafeBand, IoT wearable technology for user safety (ESP32).\n6. SafeForm, a Google Form anti-cheating gateway with fullscreen lock and real-time violation detection.\n7. JTI Polinema Student Achievement Management System (Laravel).\n8. Campus Facility Reporting and Maintenance System (Laravel).\n9. CatatDong, an expense tracker app (Next.js).\n10. Computer Vision: Vehicle Detection, using Python and YOLOv8.\n11. Emotion AI, real-time facial expression detection with TensorFlow and CNN.\nDetails for each project are on this site's Projects page, feel free to check them there. You can also ask me about a specific project, just name it.",
   },
   {
     id: "project-form-converter",
@@ -174,6 +174,30 @@ export const KNOWLEDGE: KnowledgeSection[] = [
       "Emotion AI adalah proyek Fahri yang mendeteksi ekspresi wajah secara real-time memakai TensorFlow dan CNN (Convolutional Neural Network).\nKamera membaca wajah, lalu model mengklasifikasikan ekspresi yang tampil saat itu juga. Teknologi semacam ini dipakai antara lain untuk riset interaksi manusia-komputer dan sistem yang responsif terhadap pengguna.\nProyek ini contoh sisi Machine Learning Fahri di bidang pengolahan citra wajah. Detailnya ada di halaman Projects situs ini.",
     en_text:
       "Emotion AI is Fahri's project that detects facial expressions in real time using TensorFlow and a CNN (Convolutional Neural Network).\nThe camera reads a face and the model classifies the expression it shows right away. This kind of technology is used in human-computer interaction research and user-responsive systems, among other things.\nThis project shows Fahri's Machine Learning side in facial image processing. Details are on this site's Projects page.",
+  },
+  {
+    id: "project-playitplus",
+    keywords: ["playitplus", "play it plus", "veriscribe", "dokumentasi klinis", "clinical documentation", "soap", "speech-to-text", "speech to text", "transkrip konsultasi", "rekam medis", "simrs", "catatan dokter"],
+    id_text:
+      "PlayItPlus (VeriScribe) adalah asisten dokumentasi klinis AI yang Fahri bangun sebagai AI & Software Engineer untuk lomba PLAY IT Hackathon DeepTech 2026.\nAlurnya:\n1. Konsultasi dokter dan pasien direkam, lalu ditranskrip dengan speech-to-text.\n2. Data pribadi pasien dideidentifikasi sebelum diproses.\n3. LLM menyusun draf catatan klinis SOAP berkutipan sumber.\n4. Dokter memeriksa dan mengesahkan draf itu, tidak ada catatan yang lolos tanpa verifikasi dokter.\n5. Dari catatan yang disetujui, dibuat ringkasan berbahasa sederhana untuk pasien.\nSistemnya bekerja ujung ke ujung dan demonya ada di playitplus.vercel.app. Catatan jujur: API key LLM pada demo publik saat ini sedang dicabut karena biaya, jadi demo belum memanggil LLM sungguhan sampai key dipasang lagi. Detailnya ada di halaman Projects situs ini.",
+    en_text:
+      "PlayItPlus (VeriScribe) is an AI clinical documentation assistant Fahri built as AI & Software Engineer for the PLAY IT Hackathon DeepTech 2026 competition.\nThe flow:\n1. A doctor-patient consultation is recorded and transcribed with speech-to-text.\n2. The patient's personal data is de-identified before processing.\n3. An LLM drafts a SOAP clinical note with source citations.\n4. The doctor reviews and approves the draft; no note passes without doctor verification.\n5. A plain-language summary for the patient is generated from the approved note.\nThe system works end to end and the demo is at playitplus.vercel.app. One honest note: the public demo's LLM API key is currently revoked over cost, so the demo does not call a real LLM until a key is supplied again. Details are on this site's Projects page.",
+  },
+  {
+    id: "project-sikluspangan",
+    keywords: ["sikluspangan", "siklus pangan", "food waste", "limbah makanan", "sampah organik", "organic waste", "zero waste", "surplus makanan", "makanan basi", "donasi makanan"],
+    id_text:
+      "SiklusPangan adalah platform zero organic waste yang Fahri bangun untuk Vibe Code Competition TCC 2026, dengan peran Lead Backend, Data Infrastructure, API & Functional UI Logic.\nCara kerjanya: foto makanan dinilai kondisinya oleh Google Gemini 2.0 Flash VLM (Vision Language Model). Surplus yang masih layak konsumsi diarahkan ke penerima donasi, sedangkan makanan yang sudah basi diarahkan ke pengolahan residu, supaya tidak ada sisa organik yang terbuang percuma.\nStack-nya Next.js 15, TypeScript, dan Supabase. Demonya live di siklus-pangan.vercel.app dan detailnya ada di halaman Projects situs ini.",
+    en_text:
+      "SiklusPangan is a zero organic waste platform Fahri built for the Vibe Code Competition TCC 2026, in the role of Lead Backend, Data Infrastructure, API & Functional UI Logic.\nHow it works: a photo of food is assessed by a Google Gemini 2.0 Flash VLM (Vision Language Model). Surplus that is still edible is routed to donation recipients, while spoiled food is routed to residue processing, so no organic waste goes to waste.\nThe stack is Next.js 15, TypeScript, and Supabase. The demo is live at siklus-pangan.vercel.app and details are on this site's Projects page.",
+  },
+  {
+    id: "project-hermes",
+    keywords: ["hermes", "hermes chatbot", "faiss", "llamaindex", "chatbot pdf", "rag pdf", "dokumen pdf"],
+    id_text:
+      "Hermes Chatbot with RAG adalah chatbot dokumen open source buatan Fahri (repo publik di GitHub-nya).\nCara kerjanya:\n1. Pengguna mengunggah PDF, isinya dipecah menjadi potongan teks dengan LlamaIndex MarkdownNodeParser.\n2. Potongan teks di-embed dengan FastEmbed (BAAI/bge-small-en-v1.5) dan disimpan di FAISS IndexFlatIP.\n3. Saat ditanya, sistem mengambil 10 potongan paling relevan (top-K 10) dan LLM menjawab berdasarkan isinya.\n4. Kalau LLM tidak tersedia, ada fallback berlapis sampai fallback kata kunci, jadi chatbot tetap menjawab.\nFrontend-nya Next.js 15 dan backend-nya FastAPI. Korpus contoh bawaannya adalah cerita rakyat Madura. Detailnya ada di halaman Projects situs ini.",
+    en_text:
+      "Hermes Chatbot with RAG is an open-source document chatbot Fahri built (public repo on his GitHub).\nHow it works:\n1. A user uploads a PDF and its content is split into text chunks with the LlamaIndex MarkdownNodeParser.\n2. The chunks are embedded with FastEmbed (BAAI/bge-small-en-v1.5) and stored in a FAISS IndexFlatIP index.\n3. When asked, the system retrieves the 10 most relevant chunks (top-K 10) and the LLM answers from them.\n4. If the LLM is unavailable, layered fallbacks down to a keyword fallback keep the chatbot answering.\nThe frontend is Next.js 15 and the backend is FastAPI. Its bundled sample corpus is a Madurese folktale. Details are on this site's Projects page.",
   },
   {
     id: "skills",
@@ -329,9 +353,17 @@ export const KNOWLEDGE: KnowledgeSection[] = [
   },
 ];
 
-/** Plain-text knowledge used as grounding context for the LLM. */
-export function knowledgeAsText(): string {
-  return KNOWLEDGE.map((s) => `[${s.id}] ${s.en_text} / ${s.id_text}`).join("\n");
+/**
+ * Plain-text knowledge used as grounding context for the LLM.
+ * Only the answer language's text is sent (Zanuar, 2026-11-25):
+ * sending both languages doubled the prompt to ~37.5k chars for no
+ * benefit, since the route already detects the visitor's language.
+ * One language is ~18.5-19k chars.
+ */
+export function knowledgeAsText(lang: "id" | "en"): string {
+  return KNOWLEDGE.map(
+    (s) => `[${s.id}] ${lang === "id" ? s.id_text : s.en_text}`
+  ).join("\n");
 }
 
 const STOPWORDS = new Set([
@@ -419,6 +451,25 @@ const INTENT_PHRASES: { id: string; phrases: string[] }[] = [
       "emotion ai", "deteksi emosi", "ekspresi wajah",
       "facial expression", "emotion detection",
     ],
+  },
+  {
+    id: "project-playitplus",
+    phrases: [
+      "playitplus", "play it plus", "veriscribe", "dokumentasi klinis",
+      "clinical documentation", "soap note", "catatan soap",
+      "speech-to-text", "speech to text",
+    ],
+  },
+  {
+    id: "project-sikluspangan",
+    phrases: [
+      "sikluspangan", "siklus pangan", "food waste", "limbah makanan",
+      "organic waste", "zero waste", "surplus makanan", "makanan basi",
+    ],
+  },
+  {
+    id: "project-hermes",
+    phrases: ["hermes", "faiss", "llamaindex"],
   },
   {
     id: "education",

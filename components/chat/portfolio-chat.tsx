@@ -32,6 +32,7 @@ const UI: Record<
     localModeNote: string;
     chips: string[];
     sourceGemini: string;
+    sourceSumopod: string;
     sourceLocal: string;
     email: string;
     linkedin: string;
@@ -56,6 +57,7 @@ const UI: Record<
       "Bagaimana cara menghubungi Fahri?",
     ],
     sourceGemini: "Gemini AI",
+    sourceSumopod: "Sumopod AI",
     sourceLocal: "Mode lokal",
     email: "Email Fahri",
     linkedin: "LinkedIn Fahri",
@@ -80,6 +82,7 @@ const UI: Record<
       "How can I contact Fahri?",
     ],
     sourceGemini: "Gemini AI",
+    sourceSumopod: "Sumopod AI",
     sourceLocal: "Local mode",
     email: "Email Fahri",
     linkedin: "Fahri's LinkedIn",
@@ -475,6 +478,11 @@ export function PortfolioChat(): ReactNode {
                     <RichText text={m.text} />
                   ) : (
                     <p className="whitespace-pre-wrap">{m.text}</p>
+                  )}
+                  {m.role === "assistant" && m.source === "sumopod" && (
+                    <p className="text-foreground/45 mt-1 text-[11px]">
+                      {ui.sourceSumopod}
+                    </p>
                   )}
                   {m.role === "assistant" && m.source === "gemini" && (
                     <p className="text-foreground/45 mt-1 text-[11px]">

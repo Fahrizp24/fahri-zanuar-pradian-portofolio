@@ -48,6 +48,84 @@ export function dontKnowMessage(lang: Lang): string {
     : `Sorry, that information is not in the portfolio data I can access, so I cannot answer it without making things up. ${reachOutMessage(lang)}`;
 }
 
+/**
+ * Small talk that never needs an AI engine (Zanuar, 2026-11-25):
+ * greetings, thanks, goodbyes, "who are you", "what can you do",
+ * test pings, and bare acknowledgements get a canned answer and do
+ * NOT consume the visitor's AI quota. Matching is deliberately
+ * strict: the whole message, normalized, must be short (max 40
+ * chars) and match one pattern end to end, so a real question that
+ * merely starts with "hi" still goes to the engines.
+ */
+const SMALLTALK: { pattern: RegExp; id: string; en: string }[] = [
+  {
+    // Greetings: hi, halo, selamat pagi, assalamualaikum, ...
+    pattern:
+      /^(hi|hii+|hai|halo|hallo|hello|hei|hey|hei kak|hi kak|hai kak|halo kak|hello kak|hi there|hey there|selamat (pagi|siang|sore|malam)|ass?alamu'?alaikum|permisi|nuwun sewu)( kak| bang| gan| semua| there)?$/,
+    id: "Halo! Aku asisten portofolio Fahri. Silakan tanya soal layanan, proyek, keahlian, atau pengalaman Fahri — atau cara menghubunginya.",
+    en: "Hello! I am Fahri's portfolio assistant. Feel free to ask about Fahri's services, projects, skills, or experience — or how to contact him.",
+  },
+  {
+    // How are you: apa kabar, how are you, ...
+    pattern: /^(apa kabar|gimana kabarnya|bagaimana kabarnya|how are you|how's it going|how do you do)$/,
+    id: "Baik, terima kasih! Aku asisten portofolio Fahri — silakan tanya soal layanan, proyek, keahlian, atau pengalaman Fahri.",
+    en: "I am doing well, thank you! I am Fahri's portfolio assistant — feel free to ask about his services, projects, skills, or experience.",
+  },
+  {
+    // Thanks: terima kasih, makasih, thanks, ...
+    pattern:
+      /^(terima kasih|trimakasih|makasih|makasi|trims|thanks|thank you|thx|tq)( banyak)?( kak| bang)?$/,
+    id: "Sama-sama! Kalau masih ada yang ingin ditanyakan soal Fahri, silakan — atau hubungi langsung lewat email dan LinkedIn di halaman kontak.",
+    en: "You are welcome! If there is anything else you would like to know about Fahri, just ask — or reach him directly via the email and LinkedIn on the contact page.",
+  },
+  {
+    // Goodbyes: bye, dadah, sampai jumpa, ...
+    pattern:
+      /^(bye|bye bye|dadah|dah|sampai jumpa|see you|goodbye|good bye|selamat tinggal|permisi dulu)$/,
+    id: "Sampai jumpa! Kalau nanti butuh info soal Fahri, kembali saja ke sini — atau hubungi langsung lewat email dan LinkedIn.",
+    en: "See you! If you need anything about Fahri later, come back here — or reach him directly via email and LinkedIn.",
+  },
+  {
+    // Identity: siapa kamu, who are you, kamu bot?, ...
+    pattern:
+      /^(siapa kamu|kamu siapa|kamu ini siapa|who are you|kamu bot|kamu robot|kamu ai|apakah kamu (bot|ai|robot|manusia)|are you (a )?(bot|ai|robot|human))(\?)?$/,
+    id: "Aku asisten virtual di situs portofolio Fahri Zanuar Pradian. Tugasku menjawab pertanyaan pengunjung soal layanan, proyek, keahlian, dan pengalaman Fahri, berdasarkan data portofolio ini.",
+    en: "I am the virtual assistant on Fahri Zanuar Pradian's portfolio site. My job is to answer visitor questions about Fahri's services, projects, skills, and experience, based on this portfolio's data.",
+  },
+  {
+    // Help / menu: bisa apa, bantuan, what can you do, ...
+    pattern:
+      /^(bantuan|help|menu|bisa apa|kamu bisa apa|bisa tanya apa|what can you do|bisa bantu apa|mulai|start)$/,
+    id: "Kamu bisa tanya soal ini:\n1. Layanan dan keahlian Fahri\n2. Proyek yang pernah dikerjakan\n3. Pengalaman dan latar belakang Fahri\n4. Cara menghubungi Fahri\nSilakan pilih salah satu, atau tulis pertanyaanmu sendiri.",
+    en: "You can ask about these:\n1. Fahri's services and skills\n2. Projects he has built\n3. Fahri's experience and background\n4. How to contact Fahri\nPick one, or just type your own question.",
+  },
+  {
+    // Test pings: tes, test, ping, p, ...
+    pattern: /^(tes|test|testing|cek|ping|p|tes 123|test 123)$/,
+    id: "Hadir, chatbot aktif! Silakan tanya soal layanan, proyek, atau keahlian Fahri.",
+    en: "Here, the chatbot is active! Feel free to ask about Fahri's services, projects, or skills.",
+  },
+  {
+    // Bare acknowledgements: ok, siap, mantap, ...
+    pattern:
+      /^(ok|oke|okay|baik|siap|mantap|bagus|keren|noted|mengerti|paham|oh gitu|oh begitu|oh ok)$/,
+    id: "Siap! Silakan tanya kalau ada yang ingin kamu ketahui soal Fahri.",
+    en: "Got it! Feel free to ask if there is anything you would like to know about Fahri.",
+  },
+];
+
+export function smalltalkFor(raw: string, lang: Lang): string | null {
+  const norm = sanitize(raw)
+    .toLowerCase()
+    .replace(/[!.,?~]+$/g, "")
+    .trim();
+  if (!norm || norm.length > 40) return null;
+  for (const item of SMALLTALK) {
+    if (item.pattern.test(norm)) return lang === "id" ? item.id : item.en;
+  }
+  return null;
+}
+
 const INJECTION_PATTERNS: RegExp[] = [
   /ignore (all )?(previous|prior|above|earlier) (instructions|prompts?|rules)/i,
   /disregard (all )?(previous|prior|above|earlier)/i,
