@@ -353,9 +353,17 @@ export const KNOWLEDGE: KnowledgeSection[] = [
   },
 ];
 
-/** Plain-text knowledge used as grounding context for the LLM. */
-export function knowledgeAsText(): string {
-  return KNOWLEDGE.map((s) => `[${s.id}] ${s.en_text} / ${s.id_text}`).join("\n");
+/**
+ * Plain-text knowledge used as grounding context for the LLM.
+ * Only the answer language's text is sent (Zanuar, 2026-11-25):
+ * sending both languages doubled the prompt to ~37.5k chars for no
+ * benefit, since the route already detects the visitor's language.
+ * One language is ~18.5-19k chars.
+ */
+export function knowledgeAsText(lang: "id" | "en"): string {
+  return KNOWLEDGE.map(
+    (s) => `[${s.id}] ${lang === "id" ? s.id_text : s.en_text}`
+  ).join("\n");
 }
 
 const STOPWORDS = new Set([

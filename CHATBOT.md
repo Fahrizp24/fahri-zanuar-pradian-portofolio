@@ -48,7 +48,10 @@ reading claims about one.
      while the widget shows an animated three-dot typing indicator
      (minimum ~0.95s on screen), so local replies feel like the bot
      paused to think instead of answering instantly.
-- Knowledge: `lib/chatbot-knowledge.ts`. Every fact comes from this site
+- Knowledge: `lib/chatbot-knowledge.ts`. The system prompt sent to
+  the AI engines carries only the visitor's detected language
+  (~19-20.5k chars total, vs ~38.5k when both languages were sent).
+  Every fact comes from this site
   (hero, about, skills, projects, contact) plus the freelance services
   Fahri publicly offers. Edit that file to change what the bot may say.
 
