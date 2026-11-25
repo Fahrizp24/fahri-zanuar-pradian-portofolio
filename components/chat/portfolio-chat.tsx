@@ -29,10 +29,8 @@ const UI: Record<
     placeholder: string;
     send: string;
     remaining: (n: number) => string;
-    localModeNote: string;
     chips: string[];
-    sourceGemini: string;
-    sourceSumopod: string;
+    sourceLlm: string;
     sourceLocal: string;
     email: string;
     linkedin: string;
@@ -49,16 +47,14 @@ const UI: Record<
     placeholder: "Tulis pertanyaanmu...",
     send: "Kirim",
     remaining: (n) => `Sisa pertanyaan AI: ${n}/${MAX_QUESTIONS_PER_VISITOR}`,
-    localModeNote: "Mode lokal",
     chips: [
       "Jasa apa saja yang ditawarkan Fahri?",
       "Bisa bikin chatbot atau RAG untuk bisnis saya?",
       "Proyek apa saja yang pernah dibuat?",
       "Bagaimana cara menghubungi Fahri?",
     ],
-    sourceGemini: "Gemini AI",
-    sourceSumopod: "Sumopod AI",
-    sourceLocal: "Mode lokal",
+    sourceLlm: "LLM Mode",
+    sourceLocal: "Local Mode",
     email: "Email Fahri",
     linkedin: "LinkedIn Fahri",
     openLabel: "Buka chatbot portofolio",
@@ -74,16 +70,14 @@ const UI: Record<
     placeholder: "Type your question...",
     send: "Send",
     remaining: (n) => `AI questions left: ${n}/${MAX_QUESTIONS_PER_VISITOR}`,
-    localModeNote: "Local mode",
     chips: [
       "What services does Fahri offer?",
       "Can he build a chatbot or RAG for my business?",
       "What projects has he built?",
       "How can I contact Fahri?",
     ],
-    sourceGemini: "Gemini AI",
-    sourceSumopod: "Sumopod AI",
-    sourceLocal: "Local mode",
+    sourceLlm: "LLM Mode",
+    sourceLocal: "Local Mode",
     email: "Email Fahri",
     linkedin: "Fahri's LinkedIn",
     openLabel: "Open portfolio chatbot",
@@ -337,8 +331,6 @@ export function PortfolioChat(): ReactNode {
     el.scrollTo({ top: el.scrollHeight });
   }, [messages, open, loading]);
 
-  const geminiDone = remaining <= 0;
-
   async function send(text: string): Promise<void> {
     const cleaned = text.trim();
     if (!cleaned || loading) return;
@@ -431,7 +423,7 @@ export function PortfolioChat(): ReactNode {
               </p>
               <p className="text-foreground/55 text-[11px] sm:text-[12px]">{ui.subtitle}</p>
               <p className="text-foreground/70 mt-1 text-[11px] font-medium sm:text-[12px]">
-                {geminiDone ? ui.localModeNote : ui.remaining(remaining)}
+                {ui.remaining(remaining)}
               </p>
             </div>
             <button
@@ -479,16 +471,12 @@ export function PortfolioChat(): ReactNode {
                   ) : (
                     <p className="whitespace-pre-wrap">{m.text}</p>
                   )}
-                  {m.role === "assistant" && m.source === "sumopod" && (
-                    <p className="text-foreground/45 mt-1 text-[11px]">
-                      {ui.sourceSumopod}
-                    </p>
-                  )}
-                  {m.role === "assistant" && m.source === "gemini" && (
-                    <p className="text-foreground/45 mt-1 text-[11px]">
-                      {ui.sourceGemini}
-                    </p>
-                  )}
+                  {m.role === "assistant" &&
+                    (m.source === "sumopod" || m.source === "gemini") && (
+                      <p className="text-foreground/45 mt-1 text-[11px]">
+                        {ui.sourceLlm}
+                      </p>
+                    )}
                   {m.role === "assistant" && m.source === "local" && (
                     <p className="text-foreground/45 mt-1 text-[11px]">
                       {ui.sourceLocal}

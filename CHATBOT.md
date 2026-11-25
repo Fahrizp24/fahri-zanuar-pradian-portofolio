@@ -38,8 +38,9 @@ reading claims about one.
      base with retrieval (`retrieveLocal`): intent phrases on the raw
      question first (so "How can I contact Fahri?" returns Contact, not
      About), then keyword scoring where generic name tokens carry no
-     weight. The widget labels these answers "Local mode" / "Mode
-     lokal" so visitors are never misled about what answered them.
+     weight. The widget labels these answers "Local Mode" and AI-engine
+     answers "LLM Mode" (the specific engine is not named), so
+     visitors are never misled about what answered them.
      Local is also the main engine once a visitor passes the
      10-question LLM quota, and every local knowledge answer ends
      with a one-line invitation to contact Fahri directly.
@@ -116,7 +117,7 @@ Upstash Redis keyed by the same visitor id / IP hash.
 - Temporarily remove `SUMOPOD_API_KEY` and the Gemini keys in a
   preview env: answers should still come back, labelled local mode.
   Remove only `SUMOPOD_API_KEY`: answers should come back labelled
-  Gemini AI instead.
+  LLM Mode instead.
 - Scroll inside the chatbox: hovering the message area and scrolling must
   scroll the messages, never the page behind (Lenis smooth scroll is
   stopped with native listeners, not React `onWheel` — see the comment
