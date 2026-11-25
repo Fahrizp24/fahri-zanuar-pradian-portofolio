@@ -1,21 +1,22 @@
 "use client";
 
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import { useRef, useSyncExternalStore, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 
 type Polaroid = {
   id: string;
   rotate: number;
   src: string;
+  alt: string;
 };
 
 const PHOTOS: Polaroid[] = [
-  { id: "a", src: "/images/about/IMG_5590.JPG.webp", rotate: -8 },
-  { id: "b", src: "/images/about/IMG_20231118_102926.jpg.webp", rotate: 6 },
-  { id: "c", src: "/images/about/IMG_5273.webp", rotate: -4 },
-  { id: "d", src: "/images/about/IMG-20261002-WA0053.jpg.webp", rotate: 7 },
-  { id: "e", src: "/images/about/IMG_2399.webp", rotate: -6 },
-  { id: "f", src: "/images/about/IMG-20260809-WA0073.jpg.webp", rotate: 5 },
+  { id: "a", src: "/images/about/IMG_5590.JPG.webp", rotate: -8, alt: "Fahri Zanuar Pradian portrait photo 1" },
+  { id: "b", src: "/images/about/IMG_20231118_102926.jpg.webp", rotate: 6, alt: "Fahri Zanuar Pradian portrait photo 2" },
+  { id: "c", src: "/images/about/IMG_5273.webp", rotate: -4, alt: "Fahri Zanuar Pradian portrait photo 3" },
+  { id: "d", src: "/images/about/IMG-20261002-WA0053.jpg.webp", rotate: 7, alt: "Fahri Zanuar Pradian portrait photo 4" },
+  { id: "e", src: "/images/about/IMG_2399.webp", rotate: -6, alt: "Fahri Zanuar Pradian portrait photo 5" },
+  { id: "f", src: "/images/about/IMG-20260809-WA0073.jpg.webp", rotate: 5, alt: "Fahri Zanuar Pradian portrait photo 6" },
 ];
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -75,7 +76,11 @@ function PolaroidCard({
     >
       <img
         src={photo.src}
-        alt="Fahri Zanuar Pradian"
+        alt={photo.alt}
+        width={144}
+        height={192}
+        loading="eager"
+        decoding="async"
         className="relative h-full w-full rounded-xl object-cover"
         draggable={false}
       />
@@ -84,16 +89,6 @@ function PolaroidCard({
 }
 
 export function PolaroidStrip(): ReactNode {
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
-
-  if (!mounted) {
-    return <div aria-hidden="true" className="h-[clamp(8rem,15vw,12rem)] w-full" />;
-  }
-
   return (
     <div className="flex flex-wrap w-full items-start justify-center gap-1 px-4 sm:gap-1.5 sm:px-8">
       {PHOTOS.map((photo, i) => (

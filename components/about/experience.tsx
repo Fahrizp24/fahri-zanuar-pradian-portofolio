@@ -19,13 +19,13 @@ const ENTRIES: Entry[] = [
     company: "Pantau Jatim",
     role: "pantauRole",
     period: "pantauPeriod",
-    logo: "/brands/pantaujatim-logo.png",
+    logo: "/brands/pantaujatim-logo.webp",
   },
   {
     company: "Timedoor",
     role: "AI Engineer",
     period: "internBoth",
-    logo: "/brands/timedoor-logo.png",
+    logo: "/brands/timedoor-logo.webp",
   },
 ];
 
@@ -45,9 +45,9 @@ export function Experience(): ReactNode {
 
   return (
     <div className="flex flex-col gap-3">
-      <h3 className="text-foreground text-[15px] font-semibold tracking-tight">
+      <h2 className="text-foreground text-[15px] font-semibold tracking-tight">
         {t("experienceTitle")}
-      </h3>
+      </h2>
       <div
         className={`border-foreground/5 bg-foreground/2 dark:bg-foreground/5 relative overflow-hidden rounded-4xl border px-2 pt-2 sm:px-4 sm:pt-4 ${
           expanded ? "pb-2 sm:pb-4" : "pb-0"
@@ -151,6 +151,8 @@ function CompanyLogo({ entry }: { entry: Entry }): ReactNode {
           alt=""
           width={32}
           height={32}
+          loading="lazy"
+          decoding="async"
           className="h-8 w-8 object-contain"
           draggable={false}
         />
@@ -160,6 +162,8 @@ function CompanyLogo({ entry }: { entry: Entry }): ReactNode {
           alt=""
           width={24}
           height={24}
+          loading="lazy"
+          decoding="async"
           className="h-6 w-6"
           draggable={false}
         />

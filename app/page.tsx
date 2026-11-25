@@ -1,10 +1,7 @@
-"use client";
-
 import { ContactCard } from "@/components/contact/contact-card";
 import { Hero } from "@/components/hero/hero";
 import { Projects } from "@/components/projects/projects";
 import type { ReactNode } from "react";
-
 
 export default function HomePage(): ReactNode {
   return (

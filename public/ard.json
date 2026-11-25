@@ -1,0 +1,15 @@
+{
+  "$schema": "https://agentic-discovery.org/schema/v1.json",
+  "name": "Fahri Zanuar Pradian — Portfolio",
+  "url": "https://fahrizanuarpradian.tech",
+  "description": "Portfolio of Fahri Zanuar Pradian — Full-Stack Web Developer and AI Engineer specializing in Next.js, TypeScript, Python, Computer Vision, and ESP32 IoT.",
+  "llms_txt": "https://fahrizanuarpradian.tech/llms.txt",
+  "sitemap": "https://fahrizanuarpradian.tech/sitemap.xml",
+  "manifest": "https://fahrizanuarpradian.tech/manifest.json",
+  "capabilities": [
+    "portfolio_browsing",
+    "project_discovery",
+    "certificate_verification",
+    "chatbot_qa"
+  ]
+}

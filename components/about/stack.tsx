@@ -213,9 +213,9 @@ export function Stack(): ReactNode {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-3">
-        <h3 className="text-foreground text-[15px] font-semibold tracking-tight">
+        <h2 className="text-foreground text-[15px] font-semibold tracking-tight">
           {t("stack")}
-        </h3>
+        </h2>
       </div>
 
       <div className="border-foreground/5 bg-foreground/2 dark:bg-foreground/5 relative h-40 overflow-hidden rounded-4xl border sm:h-64">
@@ -286,6 +286,8 @@ function ChipPill({ chip }: { chip: Chip }): ReactNode {
           alt=""
           width={18}
           height={18}
+          loading="lazy"
+          decoding="async"
           className="h-5 w-5"
           draggable={false}
         />

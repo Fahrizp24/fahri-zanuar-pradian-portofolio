@@ -1,0 +1,28 @@
+# Fahri Zanuar Pradian (fahrizanuarpradian.tech)
+
+> Official portfolio of Fahri Zanuar Pradian — Full-Stack Developer & AI Engineer based in Malang, Indonesia. D4 Informatics Engineering student at Politeknik Negeri Malang (Polinema), building full-stack web applications, ESP32 IoT systems, RAG chatbots, workflow automations, and practical Computer Vision solutions.
+
+## Primary Pages
+- [Home](https://fahrizanuarpradian.tech/): Overview, role summary, featured projects, and contact options.
+- [Projects](https://fahrizanuarpradian.tech/projects): Full showcase of web, AI, Computer Vision, and IoT projects (AI Word to Google Form Converter, SafeBand, SPPM Polinema, Campus Facility Reporting System, CatatDong, SafeForm, Vehicle Detection YOLO, Emotion AI).
+- [About](https://fahrizanuarpradian.tech/about): Background, experience (Timedoor AI Engineer Internship, Pantau Jatim Fullstack Developer & Writer), education at Polinema, technical skills, and stack.
+- [Certificates & Awards](https://fahrizanuarpradian.tech/certificates): Verified credentials and awards (BNSP Junior Web Developer, AI Ignition by Google.org, GENsi by Indosat & Nokia, DQLab Data Science, Batur UNESCO Global Geopark Competition).
+- [Sitemap XML](https://fahrizanuarpradian.tech/sitemap.xml): Complete index of crawlable URLs.
+
+## Services & Capabilities
+- Full-Stack Web Development (Next.js, React, TypeScript, Laravel, PHP, Node.js, Tailwind CSS, Supabase)
+- AI Chatbots & RAG Knowledge Assistants (grounded Q&A with guardrails and source references)
+- Workflow Automation (n8n, Make, Zapier integrated with LLM APIs)
+- Computer Vision & Machine Learning (YOLOv8, OpenCV, TensorFlow, CNN)
+- IoT & Embedded Systems (ESP32)
+- Mobile Development (Flutter)
+
+## Entity & Machine Discovery
+- Entity Name: Fahri Zanuar Pradian
+- Canonical URL: https://fahrizanuarpradian.tech
+- Primary Languages: English (en), Indonesian (id)
+- Contact Email: Fpradian24@gmail.com
+- GitHub: https://github.com/Fahrizp24
+- LinkedIn: https://linkedin.com/in/fahrizanuarpradian
+- Agent Resource Discovery: https://fahrizanuarpradian.tech/ard.json
+- Agent Protocol: Supports WebMCP (Web Model Context Protocol) on navigator.modelContext / document.modelContext for structured portfolio discovery.

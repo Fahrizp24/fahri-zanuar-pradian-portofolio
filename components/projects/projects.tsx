@@ -105,7 +105,7 @@ const PROJECTS: Project[] = [
     description: "Aplikasi pencatat pengeluaran harian dengan kalkulator jatah jajan bulanan.",
     meta: "Next.js, React, Zustand, Tailwind CSS",
     imageRatio: 1440 / 1000,
-    image: "/images/projects/CatatDong UI Showcase.png",
+    image: "/images/projects/catatdong-ui-showcase.webp",
     imageAlt: "CatatDong UI showcase",
     href: "https://catat-dong.vercel.app/",
     hrefLabel: "Open web app",

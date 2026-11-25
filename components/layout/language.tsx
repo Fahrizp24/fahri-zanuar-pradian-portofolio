@@ -95,6 +95,7 @@ export function LanguageProvider({ children }: { children: ReactNode }): ReactNo
   const [language, setLanguageState] = useState<Language>("en");
   useEffect(() => {
     const saved = window.localStorage.getItem("portfolio-language");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (saved === "id" || saved === "en") setLanguageState(saved);
   }, []);
   const setLanguage = (next: Language): void => {
@@ -121,7 +122,7 @@ export function LanguageToggle(): ReactNode {
           type="button"
           aria-pressed={language === item}
           onClick={() => setLanguage(item)}
-          className={`focus-ring h-8 min-w-8 rounded-full px-2 text-[11px] font-semibold uppercase tracking-tight transition-colors ${language === item ? "bg-foreground text-background" : "bg-background text-foreground/50 ring-1 ring-foreground/8 hover:text-foreground"}`}
+          className={`focus-ring h-9 min-w-9 rounded-full px-2.5 text-[12px] font-semibold uppercase tracking-tight transition-colors ${language === item ? "bg-foreground text-background" : "bg-background text-foreground/50 ring-1 ring-foreground/8 hover:text-foreground"}`}
         >
           {item}
         </button>

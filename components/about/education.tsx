@@ -16,7 +16,7 @@ const ENTRIES: Entry[] = [
     school: "Politeknik Negeri Malang (Polinema)",
     degree: "informatics",
     period: "present",
-    logo: "/brands/polinema-logo.png",
+    logo: "/brands/polinema-logo.webp",
   },
 ];
 
@@ -26,9 +26,9 @@ export function Education(): ReactNode {
   const { t } = useLanguage();
   return (
     <div className="flex flex-col gap-3">
-      <h3 className="text-foreground text-[15px] font-semibold tracking-tight">
+      <h2 className="text-foreground text-[15px] font-semibold tracking-tight">
         {t("educationTitle")}
-      </h3>
+      </h2>
       <div className="border-foreground/5 bg-foreground/2 dark:bg-foreground/5 relative rounded-4xl border p-2 sm:p-4">
         <ul className="flex flex-col gap-2">
           {ENTRIES.map((entry) => (
@@ -70,6 +70,8 @@ function SchoolLogo({ entry }: { entry: Entry }): ReactNode {
           alt=""
           width={32}
           height={32}
+          loading="lazy"
+          decoding="async"
           className="h-8 w-8 object-contain"
           draggable={false}
         />
@@ -79,6 +81,8 @@ function SchoolLogo({ entry }: { entry: Entry }): ReactNode {
           alt=""
           width={24}
           height={24}
+          loading="lazy"
+          decoding="async"
           className="h-6 w-6"
           draggable={false}
         />

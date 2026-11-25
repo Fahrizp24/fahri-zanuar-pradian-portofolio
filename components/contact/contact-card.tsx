@@ -15,7 +15,7 @@ const CARD_FADE_MASK =
 export function ContactCard(): ReactNode {
   const { t } = useLanguage();
   return (
-    <section className="mx-auto my-12 w-full max-w-275 px-6 sm:my-20 sm:px-10">
+    <footer className="mx-auto my-12 w-full max-w-275 px-6 sm:my-20 sm:px-10">
       <FadeIn>
         <div className="relative w-full overflow-hidden rounded-4xl border border-foreground/8 bg-background p-1.5 shadow-sm">
           <div className="relative w-full overflow-hidden rounded-[1.6rem]">
@@ -77,7 +77,7 @@ export function ContactCard(): ReactNode {
           </div>
         </div>
       </FadeIn>
-    </section>
+    </footer>
   );
 }
 

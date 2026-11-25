@@ -3,6 +3,7 @@ import { Nav } from "@/components/layout/nav";
 import { PageBackdrop } from "@/components/layout/page-backdrop";
 import { Providers } from "@/components/layout/providers";
 import { SkipToContent } from "@/components/layout/skip-to-content";
+import { getPersonSchema, getWebsiteSchema, JsonLd } from "@/components/seo/json-ld";
 import { baseMetadata } from "@/lib/metadata";
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Geist, Geist_Mono } from "next/font/google";
@@ -47,6 +48,9 @@ export default function RootLayout({
 }>): ReactNode {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <JsonLd data={[getPersonSchema(), getWebsiteSchema()]} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} min-h-screen bg-background font-sans text-foreground antialiased`}
       >

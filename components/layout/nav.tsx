@@ -135,6 +135,7 @@ export function Nav(): ReactNode {
     const activeEl =
       activeIndex >= 0 ? itemRefs.current[activeIndex] : null;
     if (!list || !activeEl) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPillRect(null);
       return;
     }

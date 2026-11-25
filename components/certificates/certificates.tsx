@@ -131,9 +131,9 @@ function Group({
 }): ReactNode {
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="text-foreground text-[15px] font-semibold tracking-tight">
+      <h2 className="text-foreground text-[15px] font-semibold tracking-tight">
         {title}
-      </h3>
+      </h2>
       <div className="border-foreground/5 bg-foreground/2 dark:bg-foreground/5 relative rounded-4xl border p-2 sm:p-4">
         <ul className="flex flex-col gap-2">
           {items.map((item) => (
@@ -171,7 +171,7 @@ function Row({
           <span className="text-foreground/55">{item.year}</span>
         </span>
         {item.credentialId ? (
-          <span className="text-foreground/40 mt-1 font-mono text-[11px] tracking-tight">
+          <span className="text-foreground/45 mt-1 font-mono text-[12px] tracking-tight">
             {item.credentialId}
           </span>
         ) : null}

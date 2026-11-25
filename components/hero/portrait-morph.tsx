@@ -304,8 +304,8 @@ export function PortraitMorph({
   return (
     <div
       ref={containerRef}
-      role="img"
-      aria-label={alt}
+      role={ready ? "img" : undefined}
+      aria-label={ready ? alt : undefined}
       className={className}
       style={{ position: "relative", width: "100%", height: "100%", filter: "grayscale(100%)" }}
     >
@@ -313,6 +313,11 @@ export function PortraitMorph({
         <img
           src={srcA}
           alt={alt}
+          width={420}
+          height={420}
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
           draggable={false}
           className="absolute inset-0 h-full w-full select-none object-cover"
         />
