@@ -98,6 +98,64 @@ const SYSTEM_INSTRUCTION = [
   knowledgeAsText(),
 ].join("\n");
 
+// Engine order (Zanuar, 2026-11-25): Sumopod is the default engine,
+// Gemini is the fallback, local retrieval is the last resort.
+// Sumopod speaks the OpenAI chat-completions format at
+// https://ai.sumopod.com/v1. The model is pinned in code to
+// hy4-flash; the key lives only in the SUMOPOD_API_KEY Vercel
+// environment variable, never in code. One attempt, 10 seconds —
+// a missing key, timeout, HTTP error, or an unusable answer moves
+// on to Gemini.
+const SUMOPOD_TIMEOUT_MS = 10_000;
+const SUMOPOD_MODEL = "hy4-flash";
+
+async function askSumopod(
+  message: string,
+  history: ChatTurn[]
+): Promise<string | null> {
+  const apiKey = process.env.SUMOPOD_API_KEY;
+  if (!apiKey) return null;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), SUMOPOD_TIMEOUT_MS);
+  try {
+    const res = await fetch("https://ai.sumopod.com/v1/chat/completions", {
+      method: "POST",
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: SUMOPOD_MODEL,
+        temperature: 0.2,
+        max_tokens: 900,
+        messages: [
+          { role: "system", content: SYSTEM_INSTRUCTION },
+          ...history.map((t) => ({
+            role: t.role === "model" ? "assistant" : "user",
+            content: t.text,
+          })),
+          { role: "user", content: message },
+        ],
+      }),
+    });
+    if (!res.ok) return null;
+    const data: unknown = await res.json();
+    const text = (
+      data as {
+        choices?: { message?: { content?: string } }[];
+      }
+    )?.choices?.[0]?.message?.content?.trim();
+    if (!text) return null;
+    if (!checkOutput(text)) return null;
+    return text.slice(0, MAX_ANSWER_CHARS);
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 // Gemini keys in priority order (Zanuar, 2026-11-24): doremianjay is
 // the default, zanuarfahri and fpradian24 are fallbacks. Each attempt
 // gets 10 seconds; a timeout, HTTP error, or quota rejection moves on
@@ -167,8 +225,9 @@ async function askGemini(
   message: string,
   history: ChatTurn[]
 ): Promise<string | null> {
-  // Main engine, pinned (confirmed by Zanuar 2026-11-23): Gemini 3.5
-  // Flash. Deliberately NOT env-configurable, so a stray GEMINI_MODEL
+  // Fallback engine, pinned: Gemini 3.5 Flash (it was the main
+  // engine until 2026-11-25, when Sumopod took over as default).
+  // Deliberately NOT env-configurable, so a stray GEMINI_MODEL
   // value in Vercel cannot silently switch the chatbot's engine.
   const model = "gemini-3.5-flash";
   for (const envName of GEMINI_KEY_ENVS) {
@@ -208,7 +267,7 @@ export async function POST(req: NextRequest) {
   const visitorKey = `v:${vid}`;
   const ipKey = `ip:${hashIp(clientIp(req))}`;
 
-  // The 5-question Gemini quota is per visitor. The IP counter is only
+  // The 5-question LLM quota is per visitor. The IP counter is only
   // a loose anti-abuse ceiling (shared offices/NAT share one IP), set
   // far higher, and it is the only hard stop left.
   const IP_ABUSE_CEILING = MAX_QUESTIONS_PER_VISITOR * 10;
@@ -220,7 +279,7 @@ export async function POST(req: NextRequest) {
       remaining: 0,
     });
   }
-  // Past the Gemini quota the chat does not stop: it continues in local
+  // Past the LLM quota the chat does not stop: it continues in local
   // mode, answered from the knowledge base (Zanuar, 2026-11-24).
   const localOnly = used >= MAX_QUESTIONS_PER_VISITOR;
 
@@ -256,6 +315,15 @@ export async function POST(req: NextRequest) {
   const cleaned = sanitize(message);
   const turns = sanitizeHistory(history);
 
+  const sumopodAnswer = localOnly ? null : await askSumopod(cleaned, turns);
+  if (sumopodAnswer) {
+    return NextResponse.json({
+      answer: sumopodAnswer,
+      source: "sumopod",
+      remaining,
+    });
+  }
+
   const geminiAnswer = localOnly ? null : await askGemini(cleaned, turns);
   if (geminiAnswer) {
     return NextResponse.json({
@@ -265,8 +333,9 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // Local answers: Gemini key missing, quota error, timeout, outage,
-  // or the visitor is past the Gemini quota (localOnly). Knowledge
+  // Local answers: every LLM engine missing, erroring, timing out,
+  // or over quota, or the visitor is past the LLM quota (localOnly).
+  // Knowledge
   // answers end with a short contact line; the dont-know message
   // already ends with its own reach-out line.
   // A short "thinking" pause so local answers do not appear instantly

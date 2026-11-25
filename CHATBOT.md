@@ -11,23 +11,30 @@ reading claims about one.
   via `app/layout.tsx`). Bilingual ID/EN, follows the site language toggle.
 - API: `app/api/chat/route.ts` (Next.js route handler, runs on Vercel).
 - Brain, in order:
-  1. **Gemini 3.5 Flash**, grounded by a strict system
-     instruction that contains only the knowledge below. The model is
-     pinned in `app/api/chat/route.ts` and is not env-configurable.
-     instruction. Three Vercel keys are tried in order
-     (`GEMINI_API_KEY_DOREMIANJAY` default, then
+  1. **Sumopod (hy4-flash)** — the default engine since 2026-11-25.
+     OpenAI-compatible chat completions at
+     `https://ai.sumopod.com/v1`, key from the `SUMOPOD_API_KEY`
+     Vercel variable, model pinned in `app/api/chat/route.ts` and not
+     env-configurable. One attempt, 10 seconds; a missing key,
+     timeout, error, or unusable answer moves on to Gemini. Grounded
+     by the same strict system instruction that contains only the
+     knowledge below.
+  2. **Gemini 3.5 Flash** — the fallback engine (it was the main
+     engine until 2026-11-25). Model pinned in code, not
+     env-configurable. Three Vercel keys are tried in order
+     (`GEMINI_API_KEY_DOREMIANJAY` first, then
      `GEMINI_API_KEY_ZANUARFAHRI`, then `GEMINI_API_KEY_FPRADIAN24`),
      10 seconds per attempt; a timeout, error, or quota rejection
      moves to the next key.
-  2. **Local fallback**: if every key is missing, errors, times out,
-     or is over quota, the route answers from the same knowledge
+  3. **Local fallback**: if every engine is missing, errors, times
+     out, or is over quota, the route answers from the same knowledge
      base with retrieval (`retrieveLocal`): intent phrases on the raw
      question first (so "How can I contact Fahri?" returns Contact, not
      About), then keyword scoring where generic name tokens carry no
      weight. The widget labels these answers "Local mode" / "Mode
      lokal" so visitors are never misled about what answered them.
      Local is also the main engine once a visitor passes the
-     5-question Gemini quota, and every local knowledge answer ends
+     5-question LLM quota, and every local knowledge answer ends
      with a one-line invitation to contact Fahri directly.
      Local answers are enriched, structured texts (intro, list, closing)
      in both languages, and the route pauses ~0.8s before returning one
@@ -40,11 +47,11 @@ reading claims about one.
 
 ## Guardrails (lib/chatbot-guardrails.ts)
 
-1. **5 Gemini questions per visitor, then local mode.** The widget
+1. **5 AI questions per visitor, then local mode.** The widget
    counts in localStorage and the API counts per visitor id, plus a
    much higher per-IP anti-abuse ceiling (shared offices and NAT share
    one IP, so the IP layer is not the per-person limit, and it is the
-   only hard stop). The first 5 questions go to Gemini; from the 6th
+   only hard stop). The first 5 questions go to the AI engines (Sumopod, then Gemini on failure); from the 6th
    on, the route answers locally and the chat never stops. Every local
    knowledge answer ends with a short contact line (email / LinkedIn),
    and every refusal tells the visitor to reach out to Fahri directly.
@@ -70,13 +77,16 @@ Upstash Redis keyed by the same visitor id / IP hash.
 ## Setup on Vercel
 
 1. Project Settings -> Environment Variables (Production + Preview):
-   - `GEMINI_API_KEY_DOREMIANJAY` (default), `GEMINI_API_KEY_ZANUARFAHRI`
-     and `GEMINI_API_KEY_FPRADIAN24` (fallbacks) = Google AI Studio
-     keys (never commit them; `.env*` is gitignored).
-   - No model variable: the engine is pinned in code to
-     `gemini-3.5-flash`, so a `GEMINI_MODEL` value in Vercel (if one
-     was ever set, it can be deleted) has no effect.
-2. Redeploy. Without the key the chatbot still works in local mode.
+   - `SUMOPOD_API_KEY` = the Sumopod key for the default engine
+     (never commit it; `.env*` is gitignored).
+   - `GEMINI_API_KEY_DOREMIANJAY`, `GEMINI_API_KEY_ZANUARFAHRI`
+     and `GEMINI_API_KEY_FPRADIAN24` = Google AI Studio keys for the
+     fallback engine.
+   - No model variables: both engines are pinned in code
+     (Sumopod `hy4-flash`, Gemini `gemini-3.5-flash`), so a
+     `GEMINI_MODEL` value in Vercel (if one was ever set, it can be
+     deleted) has no effect.
+2. Redeploy. Without any key the chatbot still works in local mode.
 3. Branch previews: every pushed branch gets a Vercel preview URL where
    the chatbot can be reviewed before merging to `main`.
 
@@ -91,12 +101,14 @@ Upstash Redis keyed by the same visitor id / IP hash.
 - Ask 5 questions, then a 6th: the chat must keep working, the
   header switches to the local-mode note, and the answer is a local
   one ending with the contact line.
-- Temporarily remove `GEMINI_API_KEY` in a preview env: answers should
-  still come back, labelled local mode.
+- Temporarily remove `SUMOPOD_API_KEY` and the Gemini keys in a
+  preview env: answers should still come back, labelled local mode.
+  Remove only `SUMOPOD_API_KEY`: answers should come back labelled
+  Gemini AI instead.
 - Scroll inside the chatbox: hovering the message area and scrolling must
   scroll the messages, never the page behind (Lenis smooth scroll is
   stopped with native listeners, not React `onWheel` — see the comment
   in `portfolio-chat.tsx`).
 - Lists render as real lists: numbered/bulleted answers, including a
-  one-paragraph "(1) …; (2) …; (3) …" answer from Gemini, show as a
+  one-paragraph "(1) …; (2) …; (3) …" answer from an AI engine, show as a
   numbered list with an intro line, not one flat paragraph.
