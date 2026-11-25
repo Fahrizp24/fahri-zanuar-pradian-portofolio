@@ -46,34 +46,6 @@ type Project = {
 
 const PROJECTS: Project[] = [
   {
-    id: "word-to-form",
-    topics: ["llm"],
-    icon: Sparkles,
-    iconLabel: "AI Form",
-    title: "AI Word to Google Form Converter",
-    description: "Mengubah dokumen Word/DOCX menjadi Google Form secara otomatis dengan Gemini AI.",
-    meta: "Next.js, React, Gemini AI",
-    imageRatio: 16 / 10,
-    image: "/images/projects/word-to-form.webp",
-    imageAlt: "AI Word to Google Form Converter",
-    href: "https://word-to-form-nextjs-app.vercel.app/",
-    hrefLabel: "Open web app",
-  },
-  {
-    id: "playitplus",
-    topics: ["llm"],
-    icon: Stethoscope,
-    iconLabel: "VeriScribe",
-    title: "PlayItPlus (VeriScribe) — AI Clinical Documentation Assistant",
-    description: "Konsultasi ditranskrip dengan speech-to-text, data pribadi dideidentifikasi, lalu LLM menyusun draf catatan SOAP untuk diverifikasi dokter beserta ringkasan untuk pasien.",
-    meta: "LLM, Speech-to-Text, Next.js",
-    imageRatio: 1852 / 850,
-    image: "/images/projects/playitplus-screenshot.webp",
-    imageAlt: "VeriScribe clinical documentation assistant",
-    href: "https://playitplus.vercel.app",
-    hrefLabel: "Open web app",
-  },
-  {
     id: "sikluspangan",
     topics: ["llm", "web"],
     icon: Sprout,
@@ -85,6 +57,64 @@ const PROJECTS: Project[] = [
     image: "/images/projects/sikluspangan-collage.webp",
     imageAlt: "SiklusPangan zero organic waste platform",
     href: "https://siklus-pangan.vercel.app",
+    hrefLabel: "Open web app",
+  },
+  {
+    id: "catatdong",
+    topics: ["web"],
+    icon: Layers,
+    iconLabel: "Website Project",
+    title: "CatatDong",
+    description: "Aplikasi pencatat pengeluaran harian dengan kalkulator jatah jajan bulanan.",
+    meta: "Next.js, React, Zustand, Tailwind CSS",
+    imageRatio: 1440 / 1000,
+    image: "/images/projects/CatatDong UI Showcase.png",
+    imageAlt: "CatatDong UI showcase",
+    href: "https://catat-dong.vercel.app/",
+    hrefLabel: "Open web app",
+  },
+  {
+    id: "emotion-ai",
+    topics: ["cv"],
+    icon: Wand2,
+    iconLabel: "Emotion AI",
+    title: "Emotion AI: Deteksi Ekspresi Wajah Real-Time",
+    description: "Sistem AI untuk mendeteksi dan mengklasifikasikan ekspresi wajah secara real-time.",
+    meta: "Python, TensorFlow, OpenCV, CNN",
+    imageRatio: 399 / 409,
+    image: "/images/projects/Expression classiication.webp",
+    imageAlt: "Emotion AI project",
+    imageMaxHeight: 220,
+    href: "https://colab.research.google.com/drive/1aj9HNCWHr-vjvSUJwR5JGPpdRTcsOZKr?usp=sharing",
+    hrefLabel: "Open Colab",
+  },
+
+  {
+    id: "veriscribe",
+    topics: ["llm"],
+    icon: Stethoscope,
+    iconLabel: "VeriScribe",
+    title: "VeriScribe — AI Clinical Documentation Assistant",
+    description: "Konsultasi ditranskrip dengan speech-to-text, data pribadi dideidentifikasi, lalu LLM menyusun draf catatan SOAP untuk diverifikasi dokter beserta ringkasan untuk pasien.",
+    meta: "LLM, Speech-to-Text, Next.js",
+    imageRatio: 1852 / 850,
+    image: "/images/projects/playitplus-screenshot.webp",
+    imageAlt: "VeriScribe clinical documentation assistant",
+    href: "https://playitplus.vercel.app",
+    hrefLabel: "Open web app",
+  },
+  {
+    id: "word-to-form",
+    topics: ["llm"],
+    icon: Sparkles,
+    iconLabel: "AI Form",
+    title: "AI Word to Google Form Converter",
+    description: "Mengubah dokumen Word/DOCX menjadi Google Form secara otomatis dengan Gemini AI.",
+    meta: "Next.js, React, Gemini AI",
+    imageRatio: 16 / 10,
+    image: "/images/projects/word-to-form.webp",
+    imageAlt: "AI Word to Google Form Converter",
+    href: "https://word-to-form-nextjs-app.vercel.app/",
     hrefLabel: "Open web app",
   },
   {
@@ -144,20 +174,6 @@ const PROJECTS: Project[] = [
     hrefLabel: "View project",
   },
   {
-    id: "catatdong",
-    topics: ["web"],
-    icon: Layers,
-    iconLabel: "Website Project",
-    title: "CatatDong",
-    description: "Aplikasi pencatat pengeluaran harian dengan kalkulator jatah jajan bulanan.",
-    meta: "Next.js, React, Zustand, Tailwind CSS",
-    imageRatio: 1440 / 1000,
-    image: "/images/projects/CatatDong UI Showcase.png",
-    imageAlt: "CatatDong UI showcase",
-    href: "https://catat-dong.vercel.app/",
-    hrefLabel: "Open web app",
-  },
-  {
     id: "fasilitas",
     topics: ["web"],
     icon: Layers,
@@ -184,23 +200,7 @@ const PROJECTS: Project[] = [
     imageAlt: "Computer vision project",
     href: "https://fahrizp24.github.io/vehicle-classification-yolo/",
     hrefLabel: "View Project",
-  },
-  {
-    id: "emotion-ai",
-    topics: ["cv"],
-    icon: Wand2,
-    iconLabel: "Emotion AI",
-    title: "Emotion AI: Deteksi Ekspresi Wajah Real-Time",
-    description: "Sistem AI untuk mendeteksi dan mengklasifikasikan ekspresi wajah secara real-time.",
-    meta: "Python, TensorFlow, OpenCV, CNN",
-    imageRatio: 399 / 409,
-    image: "/images/projects/Expression classiication.webp",
-    imageAlt: "Emotion AI project",
-    imageMaxHeight: 220,
-    href: "https://colab.research.google.com/drive/1aj9HNCWHr-vjvSUJwR5JGPpdRTcsOZKr?usp=sharing",
-    hrefLabel: "Open Colab",
-  },
-];
+  },];
 
 const TOPIC_FILTERS: { id: Topic | "all"; labelKey: string }[] = [
   { id: "all", labelKey: "filterAll" },
@@ -300,7 +300,7 @@ function ProjectCard({
   t: (id: string) => string;
 }): ReactNode {
   const Icon = project.icon;
-  const copyKey = project.id === "word-to-form" ? "Word" : project.id === "playitplus" ? "PlayItPlus" : project.id === "sikluspangan" ? "SiklusPangan" : project.id === "hermes" ? "Hermes" : project.id === "safeband" ? "Safe" : project.id === "fasilitas" ? "Fixit" : project.id === "safeform" ? "SafeForm" : project.id === "prestasi" ? "Prestasi" : project.id === "vision-vehicle-detection" ? "Vision" : project.id === "catatdong" ? "CatatDong" : "Emotion";
+  const copyKey = project.id === "word-to-form" ? "Word" : project.id === "veriscribe" ? "VeriScribe" : project.id === "sikluspangan" ? "SiklusPangan" : project.id === "hermes" ? "Hermes" : project.id === "safeband" ? "Safe" : project.id === "fasilitas" ? "Fixit" : project.id === "safeform" ? "SafeForm" : project.id === "prestasi" ? "Prestasi" : project.id === "vision-vehicle-detection" ? "Vision" : project.id === "catatdong" ? "CatatDong" : "Emotion";
   const actionLabel = project.hrefLabel === "Open Colab" ? t("openColab") : project.hrefLabel === "Open web app" ? t("openWeb") : t("viewProject");
   return (
     <FadeIn
