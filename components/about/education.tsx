@@ -45,7 +45,7 @@ export function Education(): ReactNode {
                 <span className="text-foreground/65 mt-0.5 text-[14px] tracking-tight sm:text-[15px]">
                   {t(entry.degree)}
                   <span className="text-foreground/30 mx-2">•</span>
-                  <span className="text-foreground/55">{t(entry.period)}</span>
+                  <span className="text-foreground/65">{t(entry.period)}</span>
                 </span>
               </div>
             </li>

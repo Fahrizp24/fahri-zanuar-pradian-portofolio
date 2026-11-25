@@ -1,10 +1,9 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LanguageToggle, useLanguage } from "@/components/layout/language";
 import {
   useEffect,
@@ -115,6 +114,7 @@ function NavThemeToggle(): ReactNode {
 
 export function Nav(): ReactNode {
   const pathname = usePathname();
+  const router = useRouter();
   const { t } = useLanguage();
   const listRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef<Array<HTMLLIElement | null>>([]);
@@ -162,17 +162,20 @@ export function Nav(): ReactNode {
       <div className="flex items-center gap-1 rounded-full bg-background p-1.5 shadow-sm border border-foreground/8">
         <ul ref={listRef} className="relative flex items-center gap-1">
           {pillRect && (
-            <motion.span
+            <span
               aria-hidden="true"
-              initial={false}
-              animate={{ x: pillRect.x, width: pillRect.width }}
-              transition={
+              style={{
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: pillRect.width,
+                transform: `translate3d(${pillRect.x}px, 0, 0)`,
+              }}
+              className={`absolute rounded-full bg-foreground/5 ring-1 ring-foreground/8 ${
                 hasMeasured
-                  ? { type: "spring", stiffness: 380, damping: 32 }
-                  : { duration: 0 }
-              }
-              style={{ left: 0, top: 0, bottom: 0 }}
-              className="absolute rounded-full bg-foreground/5 ring-1 ring-foreground/8"
+                  ? "transition-[transform,width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                  : "transition-none"
+              }`}
             />
           )}
           {NAV_ITEMS.map((item, index) => {
@@ -187,6 +190,9 @@ export function Nav(): ReactNode {
               >
                 <Link
                   href={item.href}
+                  prefetch={false}
+                  onMouseEnter={() => router.prefetch(item.href)}
+                  onFocus={() => router.prefetch(item.href)}
                   aria-current={isActive ? "page" : undefined}
                   className="focus-ring relative inline-flex cursor-pointer items-center justify-center rounded-full px-2.5 py-1.5 text-[13px] font-medium transition-colors duration-300 min-[420px]:px-3 sm:px-4 sm:text-sm"
                 >

@@ -45,6 +45,15 @@ html.dark {
   color-scheme: dark;
 }
 
+@keyframes fade-in-up {
+  from {
+    transform: translateY(10px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

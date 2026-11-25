@@ -4,6 +4,10 @@ const IMMUTABLE_CACHE = "public, max-age=31536000, immutable";
 
 const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
+  experimental: {
+    inlineCss: true,
+    optimizePackageImports: ["lucide-react"],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [

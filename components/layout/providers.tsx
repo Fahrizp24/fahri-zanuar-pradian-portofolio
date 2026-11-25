@@ -1,6 +1,6 @@
 "use client";
 
-import { ReducedMotionProvider } from "@/lib/motion";
+import { ReducedMotionProvider } from "@/lib/reduced-motion";
 import { SmoothScroll } from "@/components/layout/smooth-scroll";
 import { LanguageProvider } from "@/components/layout/language";
 import { WebMcp } from "@/components/seo/web-mcp";

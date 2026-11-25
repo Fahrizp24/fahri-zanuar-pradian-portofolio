@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import Lenis from "lenis";
 import { features } from "@/lib/config";
 
 const LENIS_OPTIONS = {
@@ -25,41 +24,59 @@ export function SmoothScroll({
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
-    const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    const isCoarsePointer =
+      window.innerWidth < 768 ||
+      window.matchMedia("(pointer: coarse)").matches;
 
     if (prefersReducedMotion || isCoarsePointer) return;
 
-    const lenis = new Lenis(LENIS_OPTIONS);
+    let cancelled = false;
+    let cleanup: (() => void) | undefined;
 
-    let rafId = 0;
-    function raf(time: number): void {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        const { default: Lenis } = await import("lenis");
+        if (cancelled) return;
 
-    rafId = requestAnimationFrame(raf);
+        const lenis = new Lenis(LENIS_OPTIONS);
 
-    function handleAnchorClick(e: MouseEvent): void {
-      const target = e.target as HTMLElement;
-      const anchor = target.closest('a[href^="#"]');
-      if (!anchor) return;
+        let rafId = 0;
+        function raf(time: number): void {
+          lenis.raf(time);
+          rafId = requestAnimationFrame(raf);
+        }
 
-      const href = anchor.getAttribute("href");
-      if (!href || href === "#") return;
+        rafId = requestAnimationFrame(raf);
 
-      const element = document.querySelector(href);
-      if (!element) return;
+        function handleAnchorClick(e: MouseEvent): void {
+          const target = e.target as HTMLElement;
+          const anchor = target.closest('a[href^="#"]');
+          if (!anchor) return;
 
-      e.preventDefault();
-      lenis.scrollTo(element as HTMLElement, { offset: -100 });
-    }
+          const href = anchor.getAttribute("href");
+          if (!href || href === "#") return;
 
-    document.addEventListener("click", handleAnchorClick);
+          const element = document.querySelector(href);
+          if (!element) return;
+
+          e.preventDefault();
+          lenis.scrollTo(element as HTMLElement, { offset: -100 });
+        }
+
+        document.addEventListener("click", handleAnchorClick);
+
+        cleanup = () => {
+          document.removeEventListener("click", handleAnchorClick);
+          cancelAnimationFrame(rafId);
+          lenis.destroy();
+        };
+      })();
+    }, 200);
 
     return () => {
-      document.removeEventListener("click", handleAnchorClick);
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
+      cancelled = true;
+      window.clearTimeout(timer);
+      cleanup?.();
     };
   }, []);
 

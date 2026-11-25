@@ -1,4 +1,4 @@
-import { PortfolioChat } from "@/components/chat/portfolio-chat";
+import { PortfolioChatLauncher } from "@/components/chat/portfolio-chat-launcher";
 import { Nav } from "@/components/layout/nav";
 import { PageBackdrop } from "@/components/layout/page-backdrop";
 import { Providers } from "@/components/layout/providers";
@@ -20,6 +20,7 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 
 const fraunces = Fraunces({
@@ -27,6 +28,7 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   axes: ["opsz", "SOFT"],
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = baseMetadata;
@@ -68,7 +70,7 @@ export default function RootLayout({
           <PageBackdrop />
           <Nav />
           {children}
-          <PortfolioChat />
+          <PortfolioChatLauncher />
         </Providers>
       </body>
     </html>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Linkedin, Mail, MessageCircle, Send, X } from "lucide-react";
+import { Linkedin, Mail, Send, X } from "lucide-react";
 import {
   useEffect,
   useRef,
@@ -264,12 +264,17 @@ function RichText({ text }: { text: string }): ReactNode {
   );
 }
 
-export function PortfolioChat(): ReactNode {
+export function PortfolioChatPanel({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}): ReactNode {
   const { language } = useLanguage();
   const lang: Lang = language === "id" ? "id" : "en";
   const ui = UI[lang];
 
-  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -425,14 +430,14 @@ export function PortfolioChat(): ReactNode {
               <p className="text-foreground text-[14px] font-semibold tracking-tight sm:text-[15px]">
                 {ui.title}
               </p>
-              <p className="text-foreground/55 text-[11px] sm:text-[12px]">{ui.subtitle}</p>
+              <p className="text-foreground/65 text-[11px] sm:text-[12px]">{ui.subtitle}</p>
               <p className="text-foreground/70 mt-1 text-[11px] font-medium sm:text-[12px]">
                 {ui.remaining(remaining)}
               </p>
             </div>
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={onClose}
               aria-label={ui.closeLabel}
               className="focus-ring border-foreground/10 text-foreground/70 hover:text-foreground inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors"
             >
@@ -476,12 +481,12 @@ export function PortfolioChat(): ReactNode {
                     <p className="whitespace-pre-wrap">{m.text}</p>
                   )}
                   {m.role === "assistant" && m.source === "gemini" && (
-                    <p className="text-foreground/45 mt-1 text-[11px]">
+                    <p className="text-foreground/65 mt-1 text-[11px]">
                       {ui.sourceGemini}
                     </p>
                   )}
                   {m.role === "assistant" && m.source === "local" && (
-                    <p className="text-foreground/45 mt-1 text-[11px]">
+                    <p className="text-foreground/65 mt-1 text-[11px]">
                       {ui.sourceLocal}
                     </p>
                   )}
@@ -556,7 +561,7 @@ export function PortfolioChat(): ReactNode {
                 placeholder={ui.placeholder}
                 maxLength={500}
                 aria-label={ui.placeholder}
-                className="border-foreground/12 text-foreground placeholder:text-foreground/40 focus:border-foreground/30 min-w-0 flex-1 rounded-full border bg-transparent px-3.5 py-2 text-[16px] outline-none sm:text-[14px]"
+                className="border-foreground/12 text-foreground placeholder:text-foreground/55 focus:border-foreground/30 min-w-0 flex-1 rounded-full border bg-transparent px-3.5 py-2 text-[16px] outline-none sm:text-[14px]"
               />
               <button
                 type="submit"
@@ -570,19 +575,6 @@ export function PortfolioChat(): ReactNode {
           )}
         </div>
       )}
-
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-label={open ? ui.closeLabel : ui.openLabel}
-        className="focus-ring bg-foreground text-background fixed right-4 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-50 inline-flex h-14 w-14 items-center justify-center rounded-full shadow-xl transition-transform hover:scale-105 sm:right-6"
-      >
-        {open ? (
-          <X className="h-6 w-6" aria-hidden="true" />
-        ) : (
-          <MessageCircle className="h-6 w-6" aria-hidden="true" />
-        )}
-      </button>
     </>
   );
 }

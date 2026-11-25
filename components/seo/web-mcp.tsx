@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { CONTACT, KNOWLEDGE, retrieveLocal } from "@/lib/chatbot-knowledge";
 
 type ModelContextTool = {
   name: string;
@@ -49,6 +48,9 @@ export function WebMcp(): null {
         required: ["query"],
       },
       execute: async (args) => {
+        const { CONTACT, KNOWLEDGE, retrieveLocal } = await import(
+          "@/lib/chatbot-knowledge"
+        );
         const query = typeof args.query === "string" ? args.query : "";
         const lang = args.lang === "id" ? "id" : "en";
         const match = retrieveLocal(query);

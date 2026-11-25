@@ -168,10 +168,10 @@ function Row({
         <span className="text-foreground/65 mt-0.5 text-[13px] tracking-tight sm:text-[14px]">
           {item.issuer}
           <span className="text-foreground/30 mx-2">•</span>
-          <span className="text-foreground/55">{item.year}</span>
+          <span className="text-foreground/65">{item.year}</span>
         </span>
         {item.credentialId ? (
-          <span className="text-foreground/45 mt-1 font-mono text-[12px] tracking-tight">
+          <span className="text-foreground/65 mt-1 font-mono text-[12px] tracking-tight">
             {item.credentialId}
           </span>
         ) : null}

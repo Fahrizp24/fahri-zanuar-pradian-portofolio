@@ -1,11 +1,29 @@
-"use client";
-
-import { motion } from "motion/react";
 import type { ReactNode } from "react";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
-
 export function FadeIn({
+  children,
+  delay = 0,
+  duration = 0.6,
+  className,
+}: {
+  children: ReactNode;
+  delay?: number;
+  duration?: number;
+  className?: string;
+}): ReactNode {
+  return (
+    <div
+      className={className}
+      style={{
+        animation: `fade-in-up ${duration}s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s both`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function ScaleUnblur({
   children,
   delay = 0,
   duration = 0.8,
@@ -17,37 +35,14 @@ export function FadeIn({
   className?: string;
 }): ReactNode {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration, delay, ease: EASE }}
+    <div
       className={className}
+      style={{
+        transformOrigin: "center",
+        animation: `fade-in-up ${duration}s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s both`,
+      }}
     >
       {children}
-    </motion.div>
-  );
-}
-
-export function ScaleUnblur({
-  children,
-  delay = 0,
-  duration = 1,
-  className,
-}: {
-  children: ReactNode;
-  delay?: number;
-  duration?: number;
-  className?: string;
-}): ReactNode {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.7, filter: "blur(20px)" }}
-      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-      transition={{ duration, delay, ease: EASE }}
-      style={{ transformOrigin: "center" }}
-      className={className}
-    >
-      {children}
-    </motion.div>
+    </div>
   );
 }
