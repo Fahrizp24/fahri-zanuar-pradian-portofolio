@@ -17,7 +17,7 @@ import { CONTACT } from "./chatbot-knowledge";
  * 5. Message length and history are capped; control characters stripped.
  */
 
-export const MAX_QUESTIONS_PER_VISITOR = 5;
+export const MAX_QUESTIONS_PER_VISITOR = 10;
 export const MAX_MESSAGE_CHARS = 500;
 export const MAX_HISTORY_TURNS = 4;
 export const MAX_ANSWER_CHARS = 1200;

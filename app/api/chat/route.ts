@@ -276,7 +276,7 @@ export async function POST(req: NextRequest) {
   const visitorKey = `v:${vid}`;
   const ipKey = `ip:${hashIp(clientIp(req))}`;
 
-  // The 5-question LLM quota is per visitor. The IP counter is only
+  // The 10-question LLM quota is per visitor. The IP counter is only
   // a loose anti-abuse ceiling (shared offices/NAT share one IP), set
   // far higher, and it is the only hard stop left.
   const IP_ABUSE_CEILING = MAX_QUESTIONS_PER_VISITOR * 10;
