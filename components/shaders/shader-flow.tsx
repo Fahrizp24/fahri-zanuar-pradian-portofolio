@@ -142,7 +142,7 @@ export function ShaderFlow(props: ShaderFlowProps): ReactNode {
     ).matches;
     const isCoarsePointer =
       window.innerWidth < 768 ||
-      window.matchMedia("(pointer: coarse)").matches;
+      !window.matchMedia("(any-pointer: fine)").matches;
     if (prefersReducedMotion || isCoarsePointer) return;
 
     let cancelled = false;

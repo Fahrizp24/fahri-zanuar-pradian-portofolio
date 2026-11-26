@@ -7,7 +7,7 @@ import { useLanguage } from "@/components/layout/language";
 
 import { ContactCardCtas } from "./contact-card-ctas";
 import { FadeIn } from "@/components/ui/motion-primitives";
-import { ShaderFlow } from "../shaders/shader-flow";
+import { ShaderFlowLazy } from "../shaders/shader-flow-lazy";
 
 const CARD_FADE_MASK =
   "radial-gradient(ellipse 90% 110% at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.92) 40%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,0.4) 90%, rgba(0,0,0,0.15) 100%)";
@@ -27,7 +27,7 @@ export function ContactCard(): ReactNode {
                 maskImage: CARD_FADE_MASK,
               }}
             >
-              <ShaderFlow scale={3} brightness={3}/>
+              <ShaderFlowLazy scale={3} brightness={3}/>
             </div>
 
             <div className="relative grid gap-8 p-6 sm:gap-10 sm:p-7 md:grid-cols-[1.2fr_1fr] md:items-stretch md:gap-6 md:p-6">
